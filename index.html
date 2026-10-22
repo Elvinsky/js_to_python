@@ -1,0 +1,1804 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Python Kick-Start</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --surface: #ffffff;
+    --surface-2: #eef2f8;
+    --text: #1b2430;
+    --muted: #5b6676;
+    --border: #dde3ec;
+    --accent: #3776ab;
+    --accent-ink: #ffffff;
+    --accent-soft: #e3eefa;
+    --yellow: #ffd43b;
+    --ok: #1f9d55;
+    --danger: #c93a3a;
+    --code-bg: #0d1117;
+    --code-text: #e6edf3;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 14px rgba(16, 24, 40, .06);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e131a;
+      --surface: #161d27;
+      --surface-2: #1d2531;
+      --text: #e6ebf2;
+      --muted: #9aa6b6;
+      --border: #2a3442;
+      --accent: #5ea2d9;
+      --accent-ink: #0b1118;
+      --accent-soft: #1b2a3b;
+      --ok: #3ecf80;
+      --danger: #ef6b6b;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 14px rgba(0, 0, 0, .3);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  body.modal-open { overflow: hidden; }
+  button, textarea, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+
+  /* ---------- Header ---------- */
+  .app-header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .app-header .wrap { padding-top: 14px; padding-bottom: 14px; }
+  .title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 1.5rem; line-height: 1.2; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
+  h1 .logo {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent) 0 50%, var(--yellow) 50% 100%);
+    flex: none;
+  }
+  .subtitle { margin: 2px 0 0; color: var(--muted); font-size: .875rem; }
+  .progress { margin-top: 12px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: 6px; }
+  .progress-label strong { color: var(--text); }
+  .bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--border); }
+  .bar > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--ok)); transition: width .3s ease; }
+  @media (prefers-reduced-motion: reduce) { .bar > div { transition: none; } }
+
+  @media (max-width: 520px) {
+    .app-header .wrap { padding-top: 10px; padding-bottom: 10px; }
+    .title-row { flex-wrap: nowrap; }
+    h1 { font-size: 1.2rem; }
+    .subtitle { display: none; }
+    .progress { margin-top: 8px; }
+    .btn { padding: 6px 10px; font-size: .8rem; white-space: nowrap; }
+    .modal { padding: 0 16px 20px; }
+  }
+
+  .btn {
+    border: 1px solid var(--border); background: var(--surface); border-radius: 8px;
+    padding: 8px 14px; font-weight: 600; font-size: .875rem;
+  }
+  .btn:hover { background: var(--surface-2); }
+  .btn-danger { color: var(--danger); }
+  .btn-danger-solid { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .btn-danger-solid:hover { background: var(--danger); filter: brightness(1.1); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent); filter: brightness(1.08); }
+
+  .warn {
+    margin: 16px 0 0; padding: 10px 14px; border-radius: 8px;
+    background: #fff4d6; color: #5c4400; border: 1px solid #f0d27a; font-size: .9rem;
+  }
+
+  /* ---------- Sections ---------- */
+  main { padding-top: 24px; padding-bottom: 56px; }
+  .section { margin-bottom: 36px; }
+  .section-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .phase-no {
+    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 700;
+    background: var(--accent); color: var(--accent-ink);
+  }
+  .section-head h2 { margin: 0; font-size: 1.15rem; line-height: 1.3; }
+  .section-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .chip {
+    display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600;
+    background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
+  }
+  .chip.neutral { background: var(--surface-2); color: var(--muted); border-color: var(--border); }
+
+  /* ---------- Topic cards ---------- */
+  .topic {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 10px; box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .topic h3 { margin: 0; font-size: 1rem; }
+  .topic-head {
+    width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+    background: none; border: 0; padding: 14px 16px; font-weight: 600;
+  }
+  .topic-head:hover { background: var(--surface-2); }
+  .check-badge {
+    flex: none; width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border); display: grid; place-items: center; font-size: 13px; color: transparent;
+  }
+  .topic.done .check-badge { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .topic.done .check-badge::before { content: "\2713"; }
+  .topic.done .topic-name { color: var(--muted); }
+  .topic-name { flex: 1; }
+  .chev {
+    flex: none; width: 9px; height: 9px;
+    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg); transition: transform .2s ease; margin-right: 4px;
+  }
+  .topic-head[aria-expanded="true"] .chev { transform: rotate(-135deg); }
+  .topic-body { padding: 4px 16px 18px 50px; border-top: 1px solid var(--border); }
+  .topic-body[hidden] { display: none; }
+  @media (max-width: 520px) { .topic-body { padding-left: 16px; } }
+
+  .block-title { margin: 16px 0 6px; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .topic-body ul, .modal ul { margin: 0; padding-left: 20px; }
+  .topic-body li, .modal li { margin: 4px 0; }
+  code {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px;
+    padding: 0 5px; font-size: .88em;
+  }
+  .js-bridge {
+    margin-top: 16px; padding: 4px 14px 10px; border-radius: 8px;
+    background: var(--surface-2); border-left: 4px solid var(--yellow);
+  }
+  .js-bridge .block-title { margin-top: 10px; }
+  .rm-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 14px; font-size: .8rem; }
+  .rm-tags a { font-weight: 600; margin-right: 2px; }
+  .rm-tags .chip { font-size: .72rem; padding: 1px 8px; }
+  .rm-ext { color: var(--muted); font-style: italic; }
+  .links { list-style: none; padding: 0; }
+  .links li { margin: 4px 0; padding: 0; word-break: break-word; }
+
+  .check {
+    display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600;
+    padding: 10px 12px; margin-top: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2);
+  }
+  .check input { width: 18px; height: 18px; accent-color: var(--ok); flex: none; margin: 0; }
+  .notes label { display: block; }
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+  }
+  .hint { color: var(--muted); font-size: .8rem; margin: 4px 0 0; }
+
+  /* ---------- Practical task card ---------- */
+  .task-card {
+    width: 100%; margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    text-align: left; padding: 16px; border-radius: var(--radius);
+    background: var(--accent-soft); border: 1px dashed var(--accent);
+  }
+  .task-card:hover { filter: brightness(.98); }
+  .task-card.done { border-style: solid; border-color: var(--ok); }
+  .task-title { display: block; font-weight: 700; }
+  .task-status { display: block; font-size: .82rem; color: var(--muted); margin-top: 2px; }
+  .task-card.done .task-status { color: var(--ok); font-weight: 600; }
+  .task-cta {
+    flex: none; background: var(--accent); color: var(--accent-ink);
+    border-radius: 8px; padding: 8px 14px; font-weight: 600; font-size: .875rem;
+  }
+
+  /* ---------- Dialogs ---------- */
+  dialog {
+    border: 0; padding: 0; color: var(--text); background: var(--surface);
+    border-radius: 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+    max-width: calc(100vw - 24px);
+  }
+  dialog::backdrop { background: rgba(8, 12, 18, .6); }
+  #task-dialog { width: 760px; max-height: calc(100vh - 32px); }
+  .modal { padding: 0 24px 24px; }
+  .modal-top {
+    position: sticky; top: 0; z-index: 1; background: var(--surface);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 0 12px; border-bottom: 1px solid var(--border);
+  }
+  .modal-top h2 { margin: 0; font-size: 1.25rem; line-height: 1.3; }
+  .icon-btn {
+    flex: none; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); font-size: 20px; line-height: 1;
+  }
+  .icon-btn:hover { background: var(--surface-2); }
+  .modal h3 { margin: 22px 0 8px; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: flex; justify-content: space-between; }
+  .modal p { margin: 0; }
+  .ac-list { list-style: none; padding: 0 !important; display: grid; gap: 8px; }
+  .ac-list li { margin: 0; }
+  .ac-list label {
+    display: flex; gap: 10px; align-items: flex-start; cursor: pointer;
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+  }
+  .ac-list input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--ok); flex: none; }
+  .ac-list .ac-tag { font-size: .72rem; font-weight: 700; color: var(--accent); display: block; }
+  .ac-list input:checked ~ span span.ac-text { text-decoration: line-through; color: var(--muted); }
+  .stack { display: flex; flex-wrap: wrap; gap: 8px; }
+  .snippet { margin-top: 10px; border-radius: 10px; overflow: hidden; background: var(--code-bg); border: 1px solid var(--border); }
+  .snippet-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 6px 10px 6px 14px; background: #161b22; color: #9da7b3; font-size: .8rem;
+  }
+  .snippet-bar .copy {
+    background: #21262d; color: #e6edf3; border: 1px solid #30363d; border-radius: 6px; padding: 3px 10px; font-size: .78rem; font-weight: 600;
+  }
+  .snippet-bar .copy:hover { background: #30363d; }
+  .snippet pre { margin: 0; padding: 14px; overflow-x: auto; color: var(--code-text); font-size: .83rem; line-height: 1.5; tab-size: 4; }
+  .modal .check { margin-top: 22px; }
+
+  #reset-dialog { width: 420px; }
+  .confirm { padding: 22px; }
+  .confirm h2 { margin: 0 0 8px; font-size: 1.15rem; }
+  .confirm p { margin: 0; color: var(--muted); }
+  .confirm .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding-bottom: 32px; }
+  noscript p { padding: 16px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="wrap">
+    <div class="title-row">
+      <div>
+        <h1><span class="logo" aria-hidden="true"></span>Python Kick-Start</h1>
+        <p class="subtitle">From 0 to Hero: a roadmap for developers moving to Python backend development</p>
+      </div>
+      <button type="button" id="reset-btn" class="btn btn-danger">Reset progress</button>
+    </div>
+    <div class="progress">
+      <div class="progress-label">
+        <span>Overall completion</span>
+        <span id="progress-text"><strong>0%</strong> &middot; 0 / 0</span>
+      </div>
+      <div class="bar" id="progress-bar" role="progressbar" aria-label="Overall completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="progress-fill"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="storage-warning"></div>
+  <noscript><p>Python Kick-Start needs JavaScript to run.</p></noscript>
+  <div id="roadmap"></div>
+</main>
+
+<footer>Topics are mapped to <a href="https://roadmap.sh/python" target="_blank" rel="noopener noreferrer">roadmap.sh/python</a>. Progress and notes are stored only in this browser (localStorage).</footer>
+
+<dialog id="task-dialog" aria-labelledby="task-modal-title">
+  <div class="modal" id="task-content"></div>
+</dialog>
+
+<dialog id="reset-dialog" aria-labelledby="reset-title">
+  <div class="confirm">
+    <h2 id="reset-title">Reset all progress?</h2>
+    <p>This clears every completed topic, task, acceptance criterion and all notes saved in this browser. It cannot be undone.</p>
+    <div class="actions">
+      <button type="button" class="btn" id="reset-cancel">Cancel</button>
+      <button type="button" class="btn btn-danger-solid" id="reset-confirm">Yes, reset everything</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =====================================================================
+   * Curriculum data
+   * ===================================================================== */
+  var CURRICULUM = [
+    {
+      id: 'sec_1',
+      title: 'Section 1: Foundational Knowledge & Engineering Practices',
+      timespan: '4–5 Days',
+      topics: [
+        {
+          id: 't_1_1',
+          name: 'Python Tooling, Isolation & Code Quality',
+          details: [
+            'Virtual Environments: `venv` baseline vs. the ultra-fast Rust-based package manager `uv` (which also installs Python versions: `uv python install 3.12`).',
+            'Per-project isolation matters: a global `pip install` pollutes the interpreter, and there is no implicit `node_modules` lookup.',
+            'Dependency locking via `pyproject.toml` & `uv.lock`; know that `pip`, Poetry, PDM and conda exist, but standardize on `uv`.',
+            '`Ruff` as linter/formatter and `Mypy` / `Pyright` for static type hints.'
+          ],
+          js: [
+            '`npm` / `pnpm` ≈ `uv` (or `pip` + `venv`)',
+            '`package.json` + lockfile ≈ `pyproject.toml` + `uv.lock`',
+            '`node_modules` ≈ `.venv` (per project; run through `uv run` instead of activating)',
+            'ESLint + Prettier ≈ Ruff; `tsc --noEmit` ≈ Mypy / Pyright'
+          ],
+          roadmap: ['Package Managers', 'uv', 'pip', 'virtualenv', 'pyenv', 'pyproject.toml', 'PyPI', 'Code Formatting', 'Ruff'],
+          links: [
+            { label: 'Python virtual environments (devfieldguide.com)', url: 'https://www.devfieldguide.com/blog/python-virtual-environments' },
+            { label: 'uv documentation', url: 'https://docs.astral.sh/uv/' },
+            { label: 'Ruff documentation', url: 'https://docs.astral.sh/ruff/' },
+            { label: 'Mypy documentation', url: 'https://mypy.readthedocs.io/' }
+          ]
+        },
+        {
+          id: 't_1_3',
+          name: 'Python Data Model for JS Developers',
+          details: [
+            'Names are references to objects; there are no `let` / `const` declarations. Scope is function / module based (LEGB): blocks do not create scope and loop variables leak.',
+            'Core types: `int` (arbitrary precision), `float`, `bool`, `str` (immutable Unicode), `bytes`, `None`. There is no `null` / `undefined` split.',
+            'Mutable (`list`, `dict`, `set`) vs immutable (`tuple`, `str`, `int`); `is` (identity) vs `==` (value); shallow vs deep copy; the mutable default argument trap (`def f(x=[])`).',
+            'Truthiness: `0`, `""`, `None` and empty collections are falsy. `and` / `or` return one of their operands. Operators: `//` floor division, `%`, `**`, chained comparisons `a < b < c`.',
+            'No implicit coercion: `"1" + 1` raises `TypeError`; convert explicitly with `int()`, `str()`, `float()`.',
+            'Indentation is syntax. Know f-strings, slicing, `str.join` / `split`, and structural pattern matching (`match` / `case`).'
+          ],
+          js: [
+            '`const x = 1` ≈ `X = 1` (constant by convention only)',
+            '`null` / `undefined` ≈ `None`',
+            '`===` ≈ `==` (value equality); reference equality ≈ `is`',
+            'Template literals ≈ f-strings: `f"{name}"`',
+            '`switch` ≈ `match` / `case`; `"1" + 1` is `"11"` in JS but a `TypeError` in Python'
+          ],
+          roadmap: ['Basic Syntax', 'Variables & Data Types', 'Type Casting', 'Conditionals', 'Loops', 'Operators', 'Variable Scope', 'Working with Strings'],
+          links: [
+            { label: 'Python tutorial: an informal introduction', url: 'https://docs.python.org/3/tutorial/introduction.html' },
+            { label: 'Python tutorial: control flow', url: 'https://docs.python.org/3/tutorial/controlflow.html' },
+            { label: 'Data model reference', url: 'https://docs.python.org/3/reference/datamodel.html' },
+            { label: 'PEP 8: style guide', url: 'https://peps.python.org/pep-0008/' }
+          ]
+        },
+        {
+          id: 't_1_4',
+          name: 'Collections, Comprehensions & Iteration',
+          details: [
+            'Built-ins: `list`, `tuple`, `set`, `dict` (insertion-ordered); slicing; unpacking (`a, b = b, a`, `first, *rest = xs`); the `collections` module (`defaultdict`, `Counter`, `deque`).',
+            'List / dict / set comprehensions and generator expressions; `enumerate`, `zip`, `sorted(key=...)`, `any` / `all`, `sum` / `min` / `max`.',
+            'The iteration protocol: iterables vs iterators; `for x in d` iterates keys; `itertools` for lazy pipelines.',
+            'Classic data structures and algorithms are optional here: hash maps, stacks and queues are just `dict`, `list` and `deque`. Come back to DSA only if you are interviewing.'
+          ],
+          js: [
+            '`arr.map(...).filter(...)` ≈ `[f(x) for x in xs if cond(x)]`',
+            'Object used as a map ≈ `dict` (`d["k"]` raises `KeyError`; `d.get("k")` returns `None`)',
+            '`Object.entries(o)` ≈ `d.items()`; spread `...` ≈ `*` / `**` unpacking',
+            '`for (const x of xs)` ≈ `for x in xs`; `new Set()` ≈ `set()`'
+          ],
+          roadmap: ['Lists', 'Tuples', 'Sets', 'Dictionaries', 'List Comprehensions', 'Generator Expressions', 'Iterators', 'HashMaps', 'Data Structures & Algorithms (optional)'],
+          links: [
+            { label: 'Python tutorial: data structures', url: 'https://docs.python.org/3/tutorial/datastructures.html' },
+            { label: 'collections module', url: 'https://docs.python.org/3/library/collections.html' },
+            { label: 'itertools module', url: 'https://docs.python.org/3/library/itertools.html' }
+          ]
+        },
+        {
+          id: 't_1_5',
+          name: 'Functions, Decorators, Generators & Context Managers',
+          details: [
+            '`def`, default and keyword-only arguments, `*args` / `**kwargs`, closures (`nonlocal`), single-expression `lambda`, and `functools` (`partial`, `lru_cache`, `wraps`).',
+            'Decorators are functions that wrap functions. FastAPI\'s `@app.get(...)` is one; learn to write one with `functools.wraps`, with and without arguments.',
+            'Generators: `yield` makes a lazy iterator. FastAPI dependencies use `yield` for setup / teardown.',
+            'Context managers: `with`, `__enter__` / `__exit__`, `contextlib.contextmanager`, and `async with` (used for DB sessions and HTTP clients).'
+          ],
+          js: [
+            'Higher-order function wrappers ≈ decorators (Python gives you the `@` syntax today)',
+            '`function*` / `yield` ≈ generator functions',
+            '`try { ... } finally { cleanup }` ≈ `with resource:`',
+            '`...args` ≈ `*args`; options-object parameter ≈ `**kwargs`; arrow functions ≈ `lambda` (one expression only, otherwise use a nested `def`)'
+          ],
+          roadmap: ['Functions & Built-in Functions', 'Lambdas', 'Decorators', 'Generator Expressions', 'Iterators', 'Context Manager'],
+          links: [
+            { label: 'Python tutorial: defining functions', url: 'https://docs.python.org/3/tutorial/controlflow.html#defining-functions' },
+            { label: 'functools module', url: 'https://docs.python.org/3/library/functools.html' },
+            { label: 'contextlib module', url: 'https://docs.python.org/3/library/contextlib.html' },
+            { label: 'Functional programming HOWTO', url: 'https://docs.python.org/3/howto/functional.html' }
+          ]
+        },
+        {
+          id: 't_1_6',
+          name: 'Classes, Dataclasses & the Dunder Protocol',
+          details: [
+            '`class`, explicit `self`, `__init__`, class vs instance attributes, `@classmethod`, `@staticmethod`, `@property`.',
+            'Inheritance, `super()`, multiple inheritance and the MRO. Prefer composition; use `ABC` or `Protocol` for contracts.',
+            'Encapsulation by convention: `_internal`, `__name_mangled`. There is no `private` keyword.',
+            'Dunder methods: `__repr__`, `__eq__`, `__hash__`, `__iter__`, `__len__`. `@dataclass` (`frozen`, `slots`) for plain data holders; Pydantic and SQLAlchemy models build on the same ideas.'
+          ],
+          js: [
+            '`this` ≈ explicit `self` (the first parameter of every method)',
+            '`constructor` ≈ `__init__`; `get x()` ≈ `@property`',
+            '`#private` ≈ `_name` by convention',
+            '`toString()` ≈ `__str__` / `__repr__`; TS `interface` ≈ `Protocol`'
+          ],
+          roadmap: ['Object Oriented Programming', 'Classes', 'Inheritance', 'Methods', 'Encapsulation', 'Paradigms'],
+          links: [
+            { label: 'Python tutorial: classes', url: 'https://docs.python.org/3/tutorial/classes.html' },
+            { label: 'dataclasses module', url: 'https://docs.python.org/3/library/dataclasses.html' },
+            { label: 'Special method names', url: 'https://docs.python.org/3/reference/datamodel.html#special-method-names' }
+          ]
+        },
+        {
+          id: 't_1_7',
+          name: 'Exceptions, Files & Regex',
+          details: [
+            '`try` / `except` / `else` / `finally`; catch specific exceptions (never a bare `except:`); `raise ... from err`; design a small exception hierarchy for domain errors. Python favours EAFP ("ask forgiveness") over pre-checking.',
+            'Files and paths: `pathlib.Path`, `open()` inside `with`, `json`, `csv`, `glob`.',
+            'The `re` module for regular expressions (raw strings: `r"\\d+"`).',
+            'Later, domain exceptions are mapped to HTTP responses by FastAPI exception handlers.'
+          ],
+          js: [
+            '`throw new Error(...)` ≈ `raise ValueError(...)`',
+            '`new Error(msg, { cause })` ≈ `raise X from err`',
+            '`fs` + `path` ≈ `pathlib`; `JSON.parse` / `stringify` ≈ `json.loads` / `dumps`',
+            '`catch (e)` catches everything; in Python you choose the exception types'
+          ],
+          roadmap: ['Error Handling', 'Exceptions', 'File Handling', 'Regular Expressions', 'Glob'],
+          links: [
+            { label: 'Python tutorial: errors and exceptions', url: 'https://docs.python.org/3/tutorial/errors.html' },
+            { label: 'pathlib module', url: 'https://docs.python.org/3/library/pathlib.html' },
+            { label: 're module', url: 'https://docs.python.org/3/library/re.html' }
+          ]
+        },
+        {
+          id: 't_1_8',
+          name: 'Modules, Packages & Imports',
+          details: [
+            'A module is a `.py` file; a package is a directory with `__init__.py`. `import x`, `from x import y`, absolute vs relative imports, `if __name__ == "__main__":`, running with `python -m package.module`.',
+            'A module runs once on first import and is cached in `sys.modules`. Circular imports are the classic failure: fix by moving shared code, importing inside a function, or keeping dependencies pointing inward (Clean Architecture).',
+            'Know the standard library: `os`, `sys`, `datetime`, `json`, `logging`, `pathlib`, `typing`, `collections`, `contextlib`.',
+            'Third-party code comes from PyPI; entry points and metadata live in `pyproject.toml`.'
+          ],
+          js: [
+            '`import { x } from "./m"` ≈ `from m import x`',
+            '`index.js` ≈ `__init__.py`; no `export` keyword (everything public unless `_prefixed` or excluded by `__all__`)',
+            '`require` cache ≈ `sys.modules`',
+            '`node file.js` ≈ `python -m package.module` (prefer `-m` inside packages)'
+          ],
+          roadmap: ['Modules', 'Built-in Modules', 'Custom Modules', 'PyPI', 'Common Packages'],
+          links: [
+            { label: 'Python tutorial: modules', url: 'https://docs.python.org/3/tutorial/modules.html' },
+            { label: 'The import system', url: 'https://docs.python.org/3/reference/import.html' },
+            { label: 'Standard library index', url: 'https://docs.python.org/3/library/' }
+          ]
+        },
+        {
+          id: 't_1_9',
+          name: 'Type Hints & Static Typing',
+          details: [
+            'Annotations are not enforced at runtime; Mypy / Pyright / Pyre check them statically. FastAPI and Pydantic additionally read them at runtime, so they drive behaviour.',
+            'Everyday syntax: `int | None`, `list[str]`, `dict[str, int]`, `Callable`, `Any`, `TypedDict`, `Literal`, `Protocol`, generics (`TypeVar` or the 3.12 `def f[T](x: T)` syntax), `Annotated` (used by FastAPI).',
+            'Strict mode, gradual typing, and `# type: ignore[code]` with a reason when you must.'
+          ],
+          js: [
+            '`T | undefined` ≈ `T | None`; `Array<T>` ≈ `list[T]`',
+            'TS `interface` ≈ `Protocol` or `TypedDict`',
+            'No compile step: types never block execution, so run Mypy in CI and your editor'
+          ],
+          roadmap: ['Static Typing', 'Type Annotations', 'typing', 'mypy', 'pyright', 'pyre'],
+          links: [
+            { label: 'typing module', url: 'https://docs.python.org/3/library/typing.html' },
+            { label: 'Mypy cheat sheet', url: 'https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html' },
+            { label: 'Pyright documentation', url: 'https://microsoft.github.io/pyright/' }
+          ]
+        },
+        {
+          id: 't_1_10',
+          name: 'Testing with pytest',
+          details: [
+            '`pytest` discovery (`test_*.py`), plain `assert`, fixtures (`@pytest.fixture`, scopes, `conftest.py`), `parametrize`, `monkeypatch`, `tmp_path`.',
+            '`unittest` and `doctest` live in the standard library: recognize them, but write new tests in pytest. `tox` / `nox` run suites across Python versions (optional).',
+            'Async tests (`pytest-asyncio` or `anyio`) arrive in Section 2; coverage via `pytest-cov`.',
+            'Aim for many fast pure-domain tests, fewer integration tests against a real DB.'
+          ],
+          js: [
+            'Jest / Vitest `describe` / `it` / `expect` ≈ plain functions + `assert`',
+            '`beforeEach` ≈ fixtures, injected by parameter name',
+            '`it.each` ≈ `@pytest.mark.parametrize`; `jest.mock` ≈ `monkeypatch` / `unittest.mock`'
+          ],
+          roadmap: ['Testing', 'pytest', 'unittest / PyUnit', 'doctest', 'tox'],
+          links: [
+            { label: 'pytest documentation', url: 'https://docs.pytest.org/en/stable/' },
+            { label: 'pytest: fixtures', url: 'https://docs.pytest.org/en/stable/how-to/fixtures.html' },
+            { label: 'unittest module', url: 'https://docs.python.org/3/library/unittest.html' }
+          ]
+        },
+        {
+          id: 't_1_2',
+          name: 'IDEs & Clean Architecture',
+          details: [
+            'VS Code & PyCharm environment setup (interpreter selection, Ruff + Mypy integration, debugger, pytest runner).',
+            'Clean Architecture & Separation of Concerns (SoC) for decoupling business logic from frameworks.',
+            'The Twelve-Factor App methodology.'
+          ],
+          js: [
+            'NestJS modules / services ≈ `/domain` services + `/api` routers',
+            'Express middleware ≈ FastAPI dependencies (`Depends`)',
+            '`process.env` ≈ `os.environ` (wrapped by a settings object)'
+          ],
+          roadmap: ['Paradigms', 'Encapsulation'],
+          links: [
+            { label: 'Altered Craft (writing.alteredcraft.com)', url: 'https://writing.alteredcraft.com/' },
+            { label: 'The Twelve-Factor App', url: 'https://12factor.net/' }
+          ]
+        }
+      ],
+      task: {
+        id: 'task_1',
+        title: 'Practical Task 1: Environment & Project Boilerplate Setup',
+        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end.',
+        acs: [
+          'Initialize an isolated Python 3.12+ environment using `uv`.',
+          'Configure `pyproject.toml` with `Ruff` linter rules and `Mypy` strict type checks.',
+          'Create directory structure separating `/config`, `/domain`, `/api`, and `/tests`.',
+          'Add one pure function in `/domain` with parametrized `pytest` tests; `ruff check`, `ruff format --check`, `mypy .` and `pytest` all pass from a clean clone.'
+        ],
+        stack: ['Python 3.12+', 'uv', 'Ruff', 'Mypy (strict)', 'pytest', 'pyproject.toml'],
+        guidelines: [
+          '`/config` reads settings from environment variables only (Twelve-Factor: config in the environment, never in code).',
+          '`/domain` holds pure business logic: no FastAPI, SQLAlchemy or other framework imports.',
+          '`/api` is a thin delivery layer that depends on `/domain`; the dependency never points the other way.',
+          '`/tests` mirrors the package layout; commit `uv.lock` so installs are reproducible.',
+          'Treat `ruff check`, `ruff format --check`, `mypy .` and `pytest` as the definition of "green" before every commit.'
+        ],
+        snippets: [
+          {
+            label: 'Shell: create the project',
+            code: [
+              '# install uv once: https://docs.astral.sh/uv/getting-started/installation/',
+              'uv init kickstart --python 3.12',
+              'cd kickstart',
+              'uv add --dev ruff mypy pytest',
+              '',
+              'mkdir -p config domain api tests',
+              'touch config/__init__.py domain/__init__.py api/__init__.py tests/__init__.py',
+              '',
+              'uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest'
+            ].join('\n')
+          },
+          {
+            label: 'pyproject.toml',
+            code: [
+              '[project]',
+              'name = "kickstart"',
+              'version = "0.1.0"',
+              'requires-python = ">=3.12"',
+              'dependencies = []',
+              '',
+              '[dependency-groups]',
+              'dev = ["ruff", "mypy", "pytest"]',
+              '',
+              '[tool.ruff]',
+              'line-length = 100',
+              'target-version = "py312"',
+              '',
+              '[tool.ruff.lint]',
+              '# pycodestyle, pyflakes, isort, bugbear, pyupgrade, pep8-naming, bandit, async checks',
+              'select = ["E", "F", "I", "B", "UP", "N", "S", "ASYNC"]',
+              '',
+              '[tool.ruff.lint.per-file-ignores]',
+              '"tests/*" = ["S101"]  # allow bare assert in tests',
+              '',
+              '[tool.ruff.format]',
+              'quote-style = "double"',
+              '',
+              '[tool.mypy]',
+              'python_version = "3.12"',
+              'strict = true',
+              'warn_unused_ignores = true',
+              '',
+              '[tool.pytest.ini_options]',
+              'testpaths = ["tests"]'
+            ].join('\n')
+          },
+          {
+            label: 'domain/pricing.py and tests/test_pricing.py',
+            code: [
+              '# ---- domain/pricing.py ----',
+              'from decimal import Decimal',
+              '',
+              'def apply_discount(price: Decimal, percent: int) -> Decimal:',
+              '    if not 0 <= percent <= 100:',
+              '        raise ValueError("percent must be between 0 and 100")',
+              '    return (price * (100 - percent) / 100).quantize(Decimal("0.01"))',
+              '',
+              '',
+              '# ---- tests/test_pricing.py ----',
+              'from decimal import Decimal',
+              '',
+              'import pytest',
+              '',
+              'from domain.pricing import apply_discount',
+              '',
+              '@pytest.mark.parametrize(',
+              '    ("price", "percent", "expected"),',
+              '    [',
+              '        (Decimal("100.00"), 0, Decimal("100.00")),',
+              '        (Decimal("19.99"), 10, Decimal("17.99")),',
+              '        (Decimal("50"), 100, Decimal("0.00")),',
+              '    ],',
+              ')',
+              'def test_apply_discount(price: Decimal, percent: int, expected: Decimal) -> None:',
+              '    assert apply_discount(price, percent) == expected',
+              '',
+              'def test_apply_discount_rejects_bad_percent() -> None:',
+              '    with pytest.raises(ValueError):',
+              '        apply_discount(Decimal("10"), 101)'
+            ].join('\n')
+          }
+        ]
+      }
+    },
+
+    {
+      id: 'sec_2',
+      title: 'Section 2: “Touching the Grass” — Unauthenticated CRUD Server',
+      timespan: '5–7 Days',
+      topics: [
+        {
+          id: 't_2_3',
+          name: 'Async Python: asyncio vs the JS Event Loop',
+          details: [
+            '`async def` / `await`; a coroutine does not start until it is awaited or scheduled (`asyncio.create_task`, `asyncio.gather`, `TaskGroup`, `asyncio.timeout`). Entry point: `asyncio.run`.',
+            'One event-loop thread serves every request. A blocking call inside `async def` (`time.sleep`, `requests`, a sync DB driver, CPU-heavy work) freezes all of them. Use async libraries (`httpx`, `asyncpg`), `asyncio.to_thread`, or a plain `def` endpoint (FastAPI runs those in a threadpool).',
+            'The GIL: one thread runs Python bytecode at a time, so threads help I/O-bound work but not CPU-bound work. For CPU-bound jobs use processes (`multiprocessing`, process pools) or a worker queue. Free-threaded builds are experimental.',
+            'Choosing a model: `asyncio` (many I/O waits), threads (blocking libraries), processes (CPU). `aiohttp` and `gevent` are alternatives you will meet in older code.'
+          ],
+          js: [
+            '`Promise.all` ≈ `asyncio.gather`; `setTimeout` ≈ `asyncio.sleep`',
+            'A Promise starts running when created; a coroutine only runs once awaited or wrapped in a task',
+            'Node always has an implicit event loop; in Python you start one explicitly, and sync code can silently block it',
+            '`worker_threads` / `cluster` ≈ `multiprocessing` / process pool'
+          ],
+          roadmap: ['Concurrency', 'Asynchrony', 'GIL', 'Threading', 'Multiprocessing', 'aiohttp', 'gevent'],
+          links: [
+            { label: 'asyncio documentation', url: 'https://docs.python.org/3/library/asyncio.html' },
+            { label: 'FastAPI: concurrency and async / await', url: 'https://fastapi.tiangolo.com/async/' },
+            { label: 'Glossary: global interpreter lock', url: 'https://docs.python.org/3/glossary.html#term-global-interpreter-lock' },
+            { label: 'concurrent.futures', url: 'https://docs.python.org/3/library/concurrent.futures.html' }
+          ]
+        },
+        {
+          id: 't_2_4',
+          name: 'Pydantic v2 & Settings',
+          details: [
+            '`BaseModel`, validation and coercion, `Field` constraints, `field_validator`, `model_validate`, `model_dump(exclude_unset=True)`, `ConfigDict(from_attributes=True)`.',
+            'Keep separate schemas for `Create`, `Update` and `Out` so ORM columns never leak into responses.',
+            '`pydantic-settings` (`BaseSettings`) reads environment variables and `.env` into a typed config object: the Twelve-Factor config layer for `/config`.'
+          ],
+          js: [
+            'Zod / Joi / class-validator ≈ Pydantic',
+            '`z.infer<typeof Schema>` ≈ the model class is the type',
+            '`dotenv` + a Zod-parsed `process.env` ≈ `BaseSettings`'
+          ],
+          roadmap: ['Pydantic', 'Common Packages'],
+          links: [
+            { label: 'Pydantic documentation', url: 'https://docs.pydantic.dev/latest/' },
+            { label: 'Pydantic: settings management', url: 'https://docs.pydantic.dev/latest/concepts/pydantic_settings/' }
+          ]
+        },
+        {
+          id: 't_2_1',
+          name: 'FastAPI & Async Routing',
+          details: [
+            'Declaring async path operation functions (`async def`).',
+            'Request body parsing and validation via Pydantic v2 schemas.',
+            'Automatic OpenAPI Swagger UI (`/docs`) and ReDoc (`/redoc`) generation.'
+          ],
+          js: [
+            'Express / Fastify route handlers ≈ `@app.get(...)` path operations',
+            'Zod request validation ≈ Pydantic parameters and bodies, validated automatically',
+            'swagger-jsdoc by hand ≈ `/docs` generated from type hints',
+            'Express middleware chain ≈ `Depends()` dependencies'
+          ],
+          roadmap: ['Frameworks', 'FastAPI', 'Flask (awareness)'],
+          links: [
+            { label: 'FastAPI tutorial: First steps', url: 'https://fastapi.tiangolo.com/tutorial/first-steps/' },
+            { label: 'Pydantic documentation', url: 'https://docs.pydantic.dev/latest/' }
+          ]
+        },
+        {
+          id: 't_2_2',
+          name: 'Relational DB Connection Pooling & ORM',
+          details: [
+            'SQLAlchemy 2.0 Async / SQLModel declarative models.',
+            'Database connection pooling with `QueuePool` (`pool_size`, `max_overflow`, `pool_recycle`).',
+            'Injecting async database sessions via FastAPI `Depends()`.'
+          ],
+          js: [
+            'Prisma / TypeORM / Knex ≈ SQLAlchemy (or SQLModel)',
+            '`pg.Pool` ≈ SQLAlchemy `QueuePool`',
+            'Per-request DB client injected by DI ≈ `Depends(get_db)` yielding a session'
+          ],
+          roadmap: ['Common Packages', 'Frameworks'],
+          links: [
+            { label: 'Database pooling in FastAPI (asifmuhammad.com)', url: 'https://asifmuhammad.com/articles/database-pooling-fastapi' },
+            { label: 'SQLModel documentation', url: 'https://sqlmodel.tiangolo.com/' },
+            { label: 'SQLAlchemy asyncio extension', url: 'https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html' }
+          ]
+        },
+        {
+          id: 't_2_5',
+          name: 'Schema Migrations with Alembic',
+          details: [
+            '`create_all` is fine for a prototype only. Real services version the schema with migrations.',
+            'Setup: `alembic init -t async`, wire `target_metadata` in `env.py`, `alembic revision --autogenerate`, `alembic upgrade head`, `alembic downgrade`.',
+            'Always review autogenerated scripts: renames appear as drop + add, and server defaults and enums need care.',
+            'Run migrations as a deploy / CI step, not on application boot.'
+          ],
+          js: [
+            'Prisma Migrate / Knex migrations / TypeORM migrations ≈ Alembic',
+            '`prisma migrate dev` ≈ `alembic revision --autogenerate` + `upgrade head`'
+          ],
+          roadmap: [],
+          links: [
+            { label: 'Alembic tutorial', url: 'https://alembic.sqlalchemy.org/en/latest/tutorial.html' },
+            { label: 'Alembic: autogenerate', url: 'https://alembic.sqlalchemy.org/en/latest/autogenerate.html' },
+            { label: 'Alembic cookbook: asyncio', url: 'https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic' }
+          ]
+        },
+        {
+          id: 't_2_6',
+          name: 'Testing Async APIs',
+          details: [
+            '`httpx.AsyncClient(transport=ASGITransport(app=app))` calls the app in-process; `pytest-asyncio` (`asyncio_mode = "auto"`) or `anyio` runs async tests.',
+            'Swap dependencies with `app.dependency_overrides[get_db]`; use a dedicated test database and roll back each test.',
+            'Cover the unhappy paths too: 404 for unknown ids and 422 for invalid bodies.'
+          ],
+          js: [
+            '`supertest` ≈ `httpx.AsyncClient`',
+            'Module mocking (`jest.mock`) ≈ `app.dependency_overrides`',
+            'Testcontainers exist in both ecosystems for real-Postgres tests'
+          ],
+          roadmap: ['Testing', 'pytest'],
+          links: [
+            { label: 'FastAPI: async tests', url: 'https://fastapi.tiangolo.com/advanced/async-tests/' },
+            { label: 'FastAPI: testing dependencies with overrides', url: 'https://fastapi.tiangolo.com/advanced/testing-dependencies/' },
+            { label: 'HTTPX: async support', url: 'https://www.python-httpx.org/async/' }
+          ]
+        }
+      ],
+      task: {
+        id: 'task_2',
+        title: 'Practical Task 2: Product Inventory Catalog API',
+        overview: 'Build an unauthenticated REST API for a product inventory catalog on top of PostgreSQL. You will practice async FastAPI routing, Pydantic v2 validation, SQLAlchemy 2.0 async sessions, tuned connection pooling, Alembic migrations and async API tests, and end with a self-documenting API you can click through in Swagger UI.',
+        acs: [
+          'Seed mock JSON product data into PostgreSQL using an async seed script.',
+          'Implement REST endpoints: `GET /items`, `GET /items/{id}`, `POST /items`, `PATCH /items/{id}`, `DELETE /items/{id}`.',
+          'Set up SQLAlchemy `create_async_engine` with `pool_size=10` and `max_overflow=20`.',
+          'Verify interactive Swagger docs at `/docs`.',
+          'Create the schema with an Alembic migration (`alembic upgrade head`), not `create_all`.',
+          'Write `pytest` tests for all five endpoints using `httpx.AsyncClient`, including 404 and 422 cases.'
+        ],
+        stack: ['Python 3.12+', 'FastAPI', 'Pydantic v2', 'SQLAlchemy 2.0 (async)', 'asyncpg', 'Alembic', 'PostgreSQL', 'Uvicorn', 'pytest + httpx'],
+        guidelines: [
+          'Separate Pydantic schemas (request/response) from ORM models; never return ORM objects without a `response_model`.',
+          'One async session per request, provided through a `Depends(get_db)` dependency.',
+          'No blocking I/O inside `async def`: use async drivers, or declare the handler with plain `def` so FastAPI runs it in a threadpool.',
+          'Return proper status codes: 201 on create, 204 on delete, 404 for unknown ids, 422 comes from Pydantic.',
+          'Use `PATCH` with a schema of optional fields and `model_dump(exclude_unset=True)` for partial updates.',
+          'Seed script is idempotent and run via `python -m scripts.seed`, not at app start-up.',
+          'Pass the connection string through `pydantic-settings`; add `pool_recycle` if your DB closes idle connections.'
+        ],
+        snippets: [
+          {
+            label: 'database.py (engine, session, dependency)',
+            code: [
+              'from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker',
+              'from fastapi import FastAPI, Depends',
+              '',
+              'DATABASE_URL = "postgresql+asyncpg://user:pass@localhost:5432/inventory"',
+              'engine = create_async_engine(DATABASE_URL, pool_size=10, max_overflow=20)',
+              'async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)',
+              '',
+              'async def get_db():',
+              '    async with async_session() as session:',
+              '        yield session'
+            ].join('\n')
+          },
+          {
+            label: 'main.py (model, schema and first endpoint)',
+            code: [
+              'from pydantic import BaseModel, ConfigDict',
+              'from sqlalchemy import String, select',
+              'from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column',
+              '',
+              '# continues from the snippet above: FastAPI, Depends, AsyncSession, get_db',
+              '',
+              'class Base(DeclarativeBase):',
+              '    pass',
+              '',
+              'class Item(Base):',
+              '    __tablename__ = "items"',
+              '',
+              '    id: Mapped[int] = mapped_column(primary_key=True)',
+              '    name: Mapped[str] = mapped_column(String(120))',
+              '    price: Mapped[float]',
+              '    stock: Mapped[int] = mapped_column(default=0)',
+              '',
+              'class ItemOut(BaseModel):',
+              '    model_config = ConfigDict(from_attributes=True)',
+              '',
+              '    id: int',
+              '    name: str',
+              '    price: float',
+              '    stock: int',
+              '',
+              'app = FastAPI(title="Inventory API")',
+              '',
+              '@app.get("/items", response_model=list[ItemOut])',
+              'async def list_items(db: AsyncSession = Depends(get_db)):',
+              '    result = await db.scalars(select(Item).order_by(Item.id))',
+              '    return result.all()',
+              '',
+              '# run: uv run uvicorn main:app --reload   then open http://127.0.0.1:8000/docs'
+            ].join('\n')
+          },
+          {
+            label: 'tests/test_items.py (async client + dependency override)',
+            code: [
+              '# pyproject.toml: [tool.pytest.ini_options] asyncio_mode = "auto"',
+              '# `db_session` is your own fixture: a session bound to a test database,',
+              '# rolled back after every test. Adjust the imports to your layout.',
+              'from collections.abc import AsyncIterator',
+              '',
+              'import pytest',
+              'import pytest_asyncio',
+              'from httpx import ASGITransport, AsyncClient',
+              '',
+              'from main import app, get_db',
+              '',
+              '@pytest_asyncio.fixture',
+              'async def client(db_session) -> AsyncIterator[AsyncClient]:',
+              '    async def override_get_db():',
+              '        yield db_session',
+              '',
+              '    app.dependency_overrides[get_db] = override_get_db',
+              '    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:',
+              '        yield c',
+              '    app.dependency_overrides.clear()',
+              '',
+              'async def test_list_items_empty(client: AsyncClient) -> None:',
+              '    response = await client.get("/items")',
+              '    assert response.status_code == 200',
+              '    assert response.json() == []',
+              '',
+              'async def test_get_unknown_item_returns_404(client: AsyncClient) -> None:',
+              '    response = await client.get("/items/999999")',
+              '    assert response.status_code == 404'
+            ].join('\n')
+          }
+        ]
+      }
+    },
+
+    {
+      id: 'sec_3',
+      title: 'Section 3: “Get Yourself Familiar” — Auth, Guards & Caching',
+      timespan: '2 Weeks',
+      topics: [
+        {
+          id: 't_3_1',
+          name: 'Authentication & JWT Security',
+          details: [
+            'Password hashing using Argon2/bcrypt and OAuth2 Bearer token workflows.',
+            'Auth0 integration or email/password authentication.'
+          ],
+          js: [
+            '`passport` / `jsonwebtoken` ≈ FastAPI security utilities + `PyJWT`',
+            'npm `bcrypt` / `argon2` ≈ `argon2-cffi` / `bcrypt` (never roll your own hashing)'
+          ],
+          roadmap: ['Common Packages', 'FastAPI'],
+          links: [
+            { label: 'FastAPI tutorial: Security', url: 'https://fastapi.tiangolo.com/tutorial/security/' },
+            { label: 'JWT introduction (jwt.io)', url: 'https://jwt.io/introduction' }
+          ]
+        },
+        {
+          id: 't_3_2',
+          name: 'Guards, RBAC & Redis Caching',
+          details: [
+            'Dependency injection security guards using `Depends()`.',
+            'Single-field RBAC (`admin`, `moderator`, `user`).',
+            'Redis in-memory caching for temporary OTP codes and rate limiting.',
+            'Decoupled Auth Microservice vs. Core Domain Service architecture.'
+          ],
+          js: [
+            'NestJS guards / Express auth middleware ≈ `Depends(require_roles(...))`',
+            '`ioredis` ≈ `redis.asyncio` (redis-py)',
+            'Key TTL (`EX`) works identically in both ecosystems'
+          ],
+          roadmap: ['Frameworks', 'Common Packages'],
+          links: [
+            { label: 'Hands-on Microservices with Django (GitHub)', url: 'https://github.com/PacktPublishing/Hands-on-Microservices-with-Django' },
+            { label: 'Redis documentation', url: 'https://redis.io/docs/' }
+          ]
+        },
+        {
+          id: 't_3_3',
+          name: 'Logging & Structured Error Handling',
+          details: [
+            'Standard-library `logging`: one logger per module (`logging.getLogger(__name__)`), levels, handlers, formatters, `dictConfig`. Replace `print` entirely.',
+            'JSON logs in production (`structlog` or a JSON formatter) with a request id carried through `contextvars` by a middleware.',
+            'Never log passwords, tokens or OTP codes; mask PII.',
+            'Map domain exceptions to HTTP responses with `@app.exception_handler`, using one consistent error body shape.'
+          ],
+          js: [
+            '`pino` / `winston` ≈ `logging` / `structlog`',
+            'Express error-handling middleware ≈ `@app.exception_handler(...)`',
+            '`AsyncLocalStorage` ≈ `contextvars`'
+          ],
+          roadmap: ['Error Handling', 'Exceptions'],
+          links: [
+            { label: 'Logging HOWTO', url: 'https://docs.python.org/3/howto/logging.html' },
+            { label: 'FastAPI: handling errors', url: 'https://fastapi.tiangolo.com/tutorial/handling-errors/' },
+            { label: 'structlog', url: 'https://www.structlog.org/' }
+          ]
+        },
+        {
+          id: 't_3_4',
+          name: 'Testing Auth, Guards & Redis',
+          details: [
+            'Test the guard matrix: no token → 401, malformed or expired token → 401, wrong role → 403, allowed role → 200. Build tokens with the same helper production uses.',
+            '`fakeredis` for OTP tests (TTL expiry, single use) and rate limiting; freeze time for token expiry.',
+            '`app.dependency_overrides[get_current_user]` isolates route logic from authentication.',
+            'Agree on the JWT claims contract (`sub`, `role`, `exp`) between Auth and Core, and test it end to end once.'
+          ],
+          js: [
+            '`supertest` + `nock` ≈ `httpx` + `respx`',
+            '`ioredis-mock` ≈ `fakeredis`',
+            '`jest.useFakeTimers` ≈ `freezegun` / `time-machine`'
+          ],
+          roadmap: ['Testing', 'pytest'],
+          links: [
+            { label: 'fakeredis documentation', url: 'https://fakeredis.readthedocs.io/' },
+            { label: 'FastAPI: testing dependencies with overrides', url: 'https://fastapi.tiangolo.com/advanced/testing-dependencies/' },
+            { label: 'HTTPX documentation', url: 'https://www.python-httpx.org/' }
+          ]
+        }
+      ],
+      task: {
+        id: 'task_3',
+        title: 'Practical Task 3: Multi-Tenant E-Commerce Auth & Order System',
+        overview: 'Split an e-commerce backend into two services: an Auth Microservice that owns identities, passwords and one-time codes, and a Core Service that owns products and orders. The Core Service never sees a password; it only trusts signed JWTs and enforces role-based access with reusable dependency guards. Guards and OTP flows are covered by tests, and auth events are logged without leaking secrets.',
+        acs: [
+          'Build Auth Microservice handling registration, password hashing, and Redis OTP verification.',
+          'Issue signed JWT bearer tokens upon authentication.',
+          'Implement custom security dependency guard in Core Service to decode and validate JWTs.',
+          'Enforce RBAC: `user` (order placement), `moderator`/`admin` (price override & stock edits).',
+          'Cover the guard matrix with `pytest` (401 missing/invalid/expired token, 403 wrong role, 200 allowed role) and OTP flows with `fakeredis` (success, wrong code, expiry, single use).',
+          'Emit structured logs for register, login success/failure and OTP issue/verify, with no passwords, tokens or codes in the output.'
+        ],
+        stack: ['FastAPI', 'PyJWT', 'Argon2 / bcrypt', 'Redis (redis-py asyncio)', 'PostgreSQL', 'SQLAlchemy 2.0', 'pytest + fakeredis', 'Docker Compose'],
+        guidelines: [
+          'Two deployable services, each with its own database/schema; communicate only through JWTs (and HTTP if required).',
+          'Hash passwords with Argon2id (or bcrypt); never log or return hashes.',
+          'Store OTP codes in Redis with a TTL (e.g. 5 min), compare in constant time, delete on first successful use.',
+          'JWT claims: `sub` (user id), `role`, `exp`. Short-lived access tokens; keep the signing secret in an environment variable.',
+          'Guards are FastAPI dependencies (`Depends`) returning the current user, so route handlers stay free of auth code.',
+          'Return 401 for missing/invalid tokens and 403 for authenticated users without the required role.',
+          'Raise domain exceptions in services and translate them to HTTP in exception handlers, not inside business logic.'
+        ],
+        snippets: [
+          {
+            label: 'core/security.py (JWT guard + RBAC dependency)',
+            code: [
+              'import os',
+              '',
+              'import jwt  # PyJWT',
+              'from fastapi import Depends, HTTPException, status',
+              'from fastapi.security import OAuth2PasswordBearer',
+              'from pydantic import BaseModel',
+              '',
+              'JWT_SECRET = os.environ["JWT_SECRET"]',
+              'JWT_ALGORITHM = "HS256"',
+              '',
+              'oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")  # login lives in the Auth service',
+              '',
+              'class CurrentUser(BaseModel):',
+              '    id: int',
+              '    role: str  # "admin" | "moderator" | "user"',
+              '',
+              'async def get_current_user(token: str = Depends(oauth2_scheme)) -> CurrentUser:',
+              '    try:',
+              '        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])',
+              '    except jwt.PyJWTError:',
+              '        raise HTTPException(',
+              '            status.HTTP_401_UNAUTHORIZED,',
+              '            "Invalid or expired token",',
+              '            headers={"WWW-Authenticate": "Bearer"},',
+              '        )',
+              '    return CurrentUser(id=int(payload["sub"]), role=payload["role"])',
+              '',
+              'def require_roles(*allowed: str):',
+              '    async def guard(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:',
+              '        if user.role not in allowed:',
+              '            raise HTTPException(status.HTTP_403_FORBIDDEN, "Insufficient permissions")',
+              '        return user',
+              '',
+              '    return guard',
+              '',
+              '# usage:',
+              '# @router.post("/orders", dependencies=[Depends(require_roles("user"))])',
+              '# @router.patch("/items/{item_id}/price", dependencies=[Depends(require_roles("moderator", "admin"))])'
+            ].join('\n')
+          },
+          {
+            label: 'auth/otp.py (Redis one-time codes)',
+            code: [
+              'import os',
+              'import secrets',
+              '',
+              'import redis.asyncio as redis',
+              '',
+              'r = redis.from_url(os.environ["REDIS_URL"], decode_responses=True)',
+              'OTP_TTL_SECONDS = 300',
+              '',
+              'async def issue_otp(email: str) -> str:',
+              '    code = f"{secrets.randbelow(1_000_000):06d}"',
+              '    await r.set(f"otp:{email}", code, ex=OTP_TTL_SECONDS)',
+              '    return code  # deliver it by email/SMS; never return it from the API',
+              '',
+              'async def verify_otp(email: str, code: str) -> bool:',
+              '    stored = await r.get(f"otp:{email}")',
+              '    if stored is not None and secrets.compare_digest(stored, code):',
+              '        await r.delete(f"otp:{email}")  # single use',
+              '        return True',
+              '    return False'
+            ].join('\n')
+          },
+          {
+            label: 'tests/test_guards.py (role matrix)',
+            code: [
+              '# set JWT_SECRET (e.g. in conftest.py) before importing the app;',
+              '# a fixture should seed item 1. pyproject: asyncio_mode = "auto"',
+              'import time',
+              '',
+              'import jwt',
+              'import pytest',
+              'from httpx import ASGITransport, AsyncClient',
+              '',
+              'from core.main import app',
+              'from core.security import JWT_ALGORITHM, JWT_SECRET',
+              '',
+              'def make_token(role: str, ttl: int = 300) -> str:',
+              '    claims = {"sub": "1", "role": role, "exp": int(time.time()) + ttl}',
+              '    return jwt.encode(claims, JWT_SECRET, algorithm=JWT_ALGORITHM)',
+              '',
+              '@pytest.mark.parametrize(',
+              '    ("token", "expected"),',
+              '    [',
+              '        (None, 401),',
+              '        ("garbage", 401),',
+              '        (make_token("moderator", ttl=-10), 401),',
+              '        (make_token("user"), 403),',
+              '        (make_token("moderator"), 200),',
+              '        (make_token("admin"), 200),',
+              '    ],',
+              ')',
+              'async def test_price_override_guard(token: str | None, expected: int) -> None:',
+              '    headers = {"Authorization": f"Bearer {token}"} if token else {}',
+              '    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:',
+              '        response = await client.patch("/items/1/price", json={"price": 9.99}, headers=headers)',
+              '    assert response.status_code == expected'
+            ].join('\n')
+          }
+        ]
+      }
+    },
+
+    {
+      id: 'sec_4',
+      title: 'Section 4: Advanced Microservices & Production Infrastructure',
+      timespan: '3–4 Weeks',
+      topics: [
+        {
+          id: 't_4_3',
+          name: 'Django Essentials (for the Hybrid Pattern)',
+          details: [
+            'Project vs app, `settings.py`, `manage.py`, models → `makemigrations` / `migrate`, the admin site, lazy QuerySets.',
+            'Django creates and tracks its own tables (`django_migrations`, `django_content_type`, `auth_*`, ...). You need to recognize them because Alembic must leave them alone.',
+            'Django ORM is synchronous-first; that is why FastAPI serves the async, high-throughput endpoints while Django keeps the schema and the admin.',
+            'Django vs FastAPI vs Flask: batteries-included vs typed and async-first vs minimal. The admin panel is the main reason to keep Django here.'
+          ],
+          js: [
+            'Django ≈ a batteries-included framework (think Rails, or NestJS + an ORM + an admin UI)',
+            '`models.py` + `makemigrations` ≈ Prisma schema + `prisma migrate`',
+            'Django admin has no first-party Node equivalent (AdminJS is the closest)'
+          ],
+          roadmap: ['Frameworks', 'Django', 'Flask', 'Pyramid / Sanic / Tornado (awareness)'],
+          links: [
+            { label: 'Django tutorial', url: 'https://docs.djangoproject.com/en/stable/intro/tutorial01/' },
+            { label: 'Django migrations', url: 'https://docs.djangoproject.com/en/stable/topics/migrations/' },
+            { label: 'Django admin site', url: 'https://docs.djangoproject.com/en/stable/ref/contrib/admin/' }
+          ]
+        },
+        {
+          id: 't_4_1',
+          name: 'Polyglot Persistence & Shared Schemas',
+          details: [
+            'Relational (PostgreSQL) for ACID transactions vs. Document NoSQL (MongoDB) for event logs.',
+            'Enterprise Hybrid Pattern: Django owns migrations & the admin panel; FastAPI serves async high-throughput APIs.',
+            'Alembic `include_object` configuration excluding `django_migrations` to avoid schema lockouts.'
+          ],
+          js: [
+            'Prisma / Knex migrations ≈ Alembic (here only for tables FastAPI owns)',
+            'Mongoose ≈ Motor / Beanie for MongoDB from async Python'
+          ],
+          roadmap: ['Frameworks', 'Common Packages'],
+          links: [
+            { label: 'Django + FastAPI shared database migration strategy', url: 'https://damianhodgkiss.com/tutorials/django-fastapi-shared-database-migration-strategy' },
+            { label: 'Alembic documentation', url: 'https://alembic.sqlalchemy.org/' }
+          ]
+        },
+        {
+          id: 't_4_2',
+          name: 'Async Task Queues & Cloud Deployment',
+          details: [
+            'Background job processing using ARQ or Celery backed by Redis.',
+            'Docker multi-stage builds and ASGI deployment (Uvicorn / Granian).',
+            'Near-free cloud deployment on Render, Railway, or FastAPI Cloud.'
+          ],
+          js: [
+            'BullMQ / Bee-Queue ≈ ARQ (asyncio) or Celery (mature, heavier)',
+            '`node server.js` / PM2 ≈ Uvicorn / Granian (ASGI servers)',
+            'Multi-stage `node:alpine` Dockerfile ≈ multi-stage Python image with a copied `.venv`'
+          ],
+          roadmap: ['Concurrency', 'Asynchrony', 'Multiprocessing'],
+          links: [
+            { label: 'Python services deployment guide (runxbuild.com)', url: 'https://www.runxbuild.com/docs/services/python/' },
+            { label: 'ARQ documentation', url: 'https://arq-docs.helpmanual.io/' },
+            { label: 'Docker multi-stage builds', url: 'https://docs.docker.com/build/building/multi-stage/' }
+          ]
+        },
+        {
+          id: 't_4_4',
+          name: 'Observability, Health Checks & CI',
+          details: [
+            '`/health` (liveness) and `/ready` (checks DB and Redis); Docker `HEALTHCHECK`; graceful shutdown for workers.',
+            'CI with GitHub Actions: `uv sync --frozen`, Ruff, Mypy, pytest against Postgres and Redis service containers, with the uv cache enabled.',
+            'Awareness of metrics and tracing (`prometheus-client`, OpenTelemetry) and error reporting (Sentry).'
+          ],
+          js: [
+            'GitHub Actions workflows look the same; swap `npm ci` for `uv sync --frozen`',
+            '`prom-client` ≈ `prometheus-client`; `@sentry/node` ≈ `sentry-sdk`'
+          ],
+          roadmap: [],
+          links: [
+            { label: 'GitHub Actions documentation', url: 'https://docs.github.com/en/actions' },
+            { label: 'uv: GitHub Actions integration', url: 'https://docs.astral.sh/uv/guides/integration/github/' },
+            { label: 'OpenTelemetry for Python', url: 'https://opentelemetry.io/docs/languages/python/' },
+            { label: 'Sentry for Python', url: 'https://docs.sentry.io/platforms/python/' }
+          ]
+        }
+      ],
+      task: {
+        id: 'task_4',
+        title: 'Practical Task 4: Hybrid Django-FastAPI Polyglot Platform',
+        overview: 'Combine everything into a production-shaped platform: Django owns the PostgreSQL schema (migrations and admin panel), FastAPI serves the high-throughput async API against the same database, a Redis-backed worker handles background email jobs, and both services ship as small multi-stage Docker images with health checks and a CI pipeline, deployed to a free-tier cloud host.',
+        acs: [
+          'Configure shared PostgreSQL database where Django manages schema migrations and FastAPI executes read/write endpoints.',
+          'Exclude Django system tables from Alembic autogenerate using `include_object` filter in `env.py`.',
+          'Implement ARQ/Celery background queue for async email notifications.',
+          'Dockerize services with multi-stage Dockerfiles and deploy to Render/Railway.',
+          'Expose `/health` and `/ready` on the FastAPI service and add a GitHub Actions workflow that runs `ruff`, `mypy` and `pytest` against Postgres and Redis.',
+          'Stretch: append domain events (e.g. order placed, email sent) to a MongoDB collection and document why they are not stored in PostgreSQL.'
+        ],
+        stack: ['Django', 'FastAPI', 'SQLAlchemy 2.0', 'Alembic', 'PostgreSQL', 'Redis', 'ARQ or Celery', 'Docker', 'GitHub Actions', 'Render / Railway'],
+        guidelines: [
+          'Single source of truth for schema: Django migrations. Alembic is used only for tables FastAPI owns, if any, and must never propose drops for Django tables.',
+          'Mirror Django-owned tables in SQLAlchemy only as needed for queries; do not autogenerate DDL from those mirrors.',
+          'Keep MongoDB (if used) for append-only event logs; keep money and inventory in PostgreSQL for ACID guarantees.',
+          'Enqueue jobs from request handlers and return immediately; make jobs idempotent and retry-safe.',
+          'Multi-stage images: build dependencies in a builder stage, copy only the virtualenv into a slim runtime image, run as a non-root user.',
+          'All configuration through environment variables so the same image runs locally, in CI and in the cloud.',
+          'Readiness checks verify real dependencies (DB, Redis); liveness checks stay cheap.'
+        ],
+        snippets: [
+          {
+            label: 'alembic/env.py (exclude Django tables)',
+            code: [
+              '# Django owns these tables; Alembic must never create, alter or drop them.',
+              'DJANGO_PREFIXES = ("django_", "auth_")',
+              '',
+              'def include_object(obj, name, type_, reflected, compare_to):',
+              '    if type_ == "table":',
+              '        if name is not None and name.startswith(DJANGO_PREFIXES):',
+              '            return False',
+              '        # table exists in the DB but not in our metadata -> Django app table; do not propose a drop',
+              '        if reflected and compare_to is None:',
+              '            return False',
+              '    return True',
+              '',
+              '# in run_migrations_online() / run_migrations_offline():',
+              '# context.configure(',
+              '#     connection=connection,',
+              '#     target_metadata=target_metadata,',
+              '#     include_object=include_object,',
+              '# )'
+            ].join('\n')
+          },
+          {
+            label: 'worker.py (ARQ background email job)',
+            code: [
+              'import os',
+              '',
+              'from arq import create_pool',
+              'from arq.connections import RedisSettings',
+              '',
+              'REDIS = RedisSettings.from_dsn(os.environ["REDIS_URL"])',
+              '',
+              'async def send_welcome_email(ctx: dict, user_id: int, email: str) -> None:',
+              '    # call your email provider here (SMTP, SES, Resend, ...)',
+              '    print(f"sending welcome email to {email} (user {user_id})")',
+              '',
+              'class WorkerSettings:',
+              '    functions = [send_welcome_email]',
+              '    redis_settings = REDIS',
+              '',
+              '# run the worker:  uv run arq worker.WorkerSettings',
+              '',
+              '# enqueue from a FastAPI route:',
+              '# pool = await create_pool(REDIS)',
+              '# await pool.enqueue_job("send_welcome_email", user.id, user.email)'
+            ].join('\n')
+          },
+          {
+            label: 'Dockerfile (multi-stage, uv)',
+            code: [
+              '# ---- build stage ----',
+              'FROM python:3.12-slim AS builder',
+              '# pin a uv version instead of :latest in real projects',
+              'COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv',
+              'WORKDIR /app',
+              'COPY pyproject.toml uv.lock ./',
+              'RUN uv sync --frozen --no-dev --no-install-project',
+              'COPY . .',
+              'RUN uv sync --frozen --no-dev',
+              '',
+              '# ---- runtime stage ----',
+              'FROM python:3.12-slim',
+              'WORKDIR /app',
+              'COPY --from=builder /app /app',
+              'ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1',
+              'RUN useradd --create-home appuser',
+              'USER appuser',
+              'EXPOSE 8000',
+              'CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]'
+            ].join('\n')
+          },
+          {
+            label: 'main.py (liveness and readiness endpoints)',
+            code: [
+              'from sqlalchemy import text',
+              '',
+              '# continues from the Task 2 snippets: app, Depends, AsyncSession, get_db',
+              '',
+              '@app.get("/health")',
+              'async def health() -> dict[str, str]:',
+              '    return {"status": "ok"}  # liveness: the process is up',
+              '',
+              '@app.get("/ready")',
+              'async def ready(db: AsyncSession = Depends(get_db)) -> dict[str, str]:',
+              '    await db.execute(text("SELECT 1"))  # readiness: dependencies answer',
+              '    return {"status": "ready"}'
+            ].join('\n')
+          },
+          {
+            label: '.github/workflows/ci.yml',
+            code: [
+              'name: ci',
+              'on: [push, pull_request]',
+              '',
+              'jobs:',
+              '  test:',
+              '    runs-on: ubuntu-latest',
+              '    services:',
+              '      postgres:',
+              '        image: postgres:16',
+              '        env:',
+              '          POSTGRES_PASSWORD: postgres',
+              '          POSTGRES_DB: app',
+              '        ports: ["5432:5432"]',
+              '        options: >-',
+              '          --health-cmd "pg_isready -U postgres"',
+              '          --health-interval 5s',
+              '          --health-retries 10',
+              '      redis:',
+              '        image: redis:7',
+              '        ports: ["6379:6379"]',
+              '    env:',
+              '      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/app',
+              '      REDIS_URL: redis://localhost:6379/0',
+              '      JWT_SECRET: ci-only-secret',
+              '    steps:',
+              '      - uses: actions/checkout@v4',
+              '      - uses: astral-sh/setup-uv@v5',
+              '        with:',
+              '          enable-cache: true',
+              '      - run: uv sync --frozen',
+              '      - run: uv run ruff check . && uv run ruff format --check .',
+              '      - run: uv run mypy .',
+              '      - run: uv run pytest'
+            ].join('\n')
+          }
+        ]
+      }
+    }
+  ];
+
+  /* =====================================================================
+   * Storage
+   * ===================================================================== */
+  var PREFIX = 'inno_python_js_dep';
+  var KEYS = {
+    topics: PREFIX + '_topics', // { [topicId]: boolean }
+    tasks: PREFIX + '_tasks',   // { [taskId]: boolean } plus "<taskId>:ac<n>" entries for individual ACs
+    notes: PREFIX + '_notes'    // { [topicOrTaskId]: string }
+  };
+  var VALUE_TYPE = { topics: 'boolean', tasks: 'boolean', notes: 'string' };
+
+  var storageOk = true;
+
+  function loadBucket(name) {
+    try {
+      var raw = window.localStorage.getItem(KEYS[name]);
+      if (!raw) return {};
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+      var clean = {};
+      Object.keys(parsed).forEach(function (k) {
+        if (typeof parsed[k] === VALUE_TYPE[name]) clean[k] = parsed[k];
+      });
+      return clean;
+    } catch (e) {
+      if (!(e instanceof SyntaxError)) storageOk = false;
+      return {};
+    }
+  }
+
+  function saveBucket(name) {
+    try {
+      window.localStorage.setItem(KEYS[name], JSON.stringify(state[name]));
+    } catch (e) {
+      storageOk = false;
+      showStorageWarning();
+    }
+  }
+
+  function loadState() {
+    return { topics: loadBucket('topics'), tasks: loadBucket('tasks'), notes: loadBucket('notes') };
+  }
+
+  var state = loadState();
+
+  /* Notes are saved after a short pause in typing, and always flushed on close/unload. */
+  var dirtyNotes = {};
+  var notesTimer = null;
+
+  function setNote(id, value) {
+    if (value) state.notes[id] = value; else delete state.notes[id];
+    dirtyNotes[id] = true;
+    clearTimeout(notesTimer);
+    notesTimer = setTimeout(flushNotes, 300);
+  }
+
+  function flushNotes() {
+    clearTimeout(notesTimer);
+    notesTimer = null;
+    if (Object.keys(dirtyNotes).length) {
+      dirtyNotes = {};
+      saveBucket('notes');
+    }
+  }
+
+  /* =====================================================================
+   * DOM helpers
+   * ===================================================================== */
+  var PROPS = ['checked', 'value', 'disabled', 'hidden', 'id', 'type', 'rows', 'placeholder', 'href', 'target', 'rel', 'htmlFor'];
+
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    var a = attrs || {};
+    Object.keys(a).forEach(function (k) {
+      var v = a[k];
+      if (v === null || v === undefined || v === false) return;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+      else if (PROPS.indexOf(k) !== -1) el[k] = v;
+      else el.setAttribute(k, v);
+    });
+    for (var i = 2; i < arguments.length; i++) append(el, arguments[i]);
+    return el;
+  }
+
+  function append(el, kid) {
+    if (kid === null || kid === undefined || kid === false) return;
+    if (Array.isArray(kid)) kid.forEach(function (k) { append(el, k); });
+    else if (typeof kid === 'string') el.appendChild(document.createTextNode(kid));
+    else el.appendChild(kid);
+  }
+
+  /* Renders `inline code` markers as <code> without ever touching innerHTML. */
+  function rich(text) {
+    var frag = document.createDocumentFragment();
+    text.split('`').forEach(function (part, i) {
+      if (!part) return;
+      frag.appendChild(i % 2 ? h('code', { text: part }) : document.createTextNode(part));
+    });
+    return frag;
+  }
+
+  function acKey(task, i) { return task.id + ':ac' + (i + 1); }
+
+  function $(id) { return document.getElementById(id); }
+
+  /* =====================================================================
+   * Progress
+   * ===================================================================== */
+  var ui = { sectionProgress: {}, topicCards: {}, taskCards: {} };
+
+  function setFlag(bucket, id, value) {
+    state[bucket][id] = !!value;
+    saveBucket(bucket);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    var done = 0, total = 0;
+    CURRICULUM.forEach(function (sec) {
+      var secDone = 0, secTotal = 0;
+      sec.topics.forEach(function (t) {
+        var on = !!state.topics[t.id];
+        secTotal++; if (on) secDone++;
+        var card = ui.topicCards[t.id];
+        if (card) card.classList.toggle('done', on);
+      });
+
+      var task = sec.task;
+      var taskOn = !!state.tasks[task.id];
+      secTotal++; if (taskOn) secDone++;
+      var acDone = task.acs.filter(function (_, i) { return state.tasks[acKey(task, i)]; }).length;
+      var tc = ui.taskCards[task.id];
+      if (tc) {
+        tc.card.classList.toggle('done', taskOn);
+        tc.status.textContent = (taskOn ? 'Completed · ' : '') + acDone + ' / ' + task.acs.length + ' acceptance criteria met';
+      }
+
+      done += secDone; total += secTotal;
+      var sp = ui.sectionProgress[sec.id];
+      if (sp) sp.textContent = secDone + ' / ' + secTotal + ' done';
+    });
+
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    $('progress-fill').style.width = pct + '%';
+    $('progress-bar').setAttribute('aria-valuenow', String(pct));
+    var text = $('progress-text');
+    text.textContent = '';
+    text.appendChild(h('strong', { text: pct + '%' }));
+    text.appendChild(document.createTextNode(' · ' + done + ' / ' + total + ' completed'));
+  }
+
+  /* =====================================================================
+   * Roadmap rendering
+   * ===================================================================== */
+  var openTopics = {};
+
+  function buildTopic(topic) {
+    var panelId = 'panel-' + topic.id;
+    var isOpen = !!openTopics[topic.id];
+
+    var head = h('button', {
+      class: 'topic-head', type: 'button',
+      'aria-expanded': String(isOpen), 'aria-controls': panelId
+    },
+      h('span', { class: 'check-badge', 'aria-hidden': 'true' }),
+      h('span', { class: 'topic-name', text: topic.name }),
+      h('span', { class: 'chev', 'aria-hidden': 'true' })
+    );
+
+    var noteId = 'note-' + topic.id;
+    var textarea = h('textarea', {
+      id: noteId, rows: 4, value: state.notes[topic.id] || '',
+      placeholder: 'Your notes, snippets, questions…',
+      oninput: function (e) { setNote(topic.id, e.target.value); }
+    });
+
+    var body = h('div', { class: 'topic-body', id: panelId, hidden: !isOpen },
+      h('div', { class: 'block-title', text: 'Concepts' }),
+      h('ul', null, topic.details.map(function (d) { return h('li', null, rich(d)); })),
+      topic.js && topic.js.length ? h('div', { class: 'js-bridge' },
+        h('div', { class: 'block-title', text: 'Coming from JavaScript' }),
+        h('ul', null, topic.js.map(function (d) { return h('li', null, rich(d)); }))
+      ) : null,
+      h('div', { class: 'block-title', text: 'Resources' }),
+      h('ul', { class: 'links' }, topic.links.map(function (l) {
+        return h('li', null, h('a', { href: l.url, target: '_blank', rel: 'noopener noreferrer', text: l.label }));
+      })),
+      h('div', { class: 'rm-tags' },
+        topic.roadmap && topic.roadmap.length
+          ? [h('a', { href: 'https://roadmap.sh/python', target: '_blank', rel: 'noopener noreferrer', text: 'roadmap.sh/python:' }),
+             topic.roadmap.map(function (r) { return h('span', { class: 'chip neutral', text: r }); })]
+          : h('span', { class: 'rm-ext', text: 'Backend extension beyond roadmap.sh/python' })
+      ),
+      h('label', { class: 'check' },
+        h('input', {
+          type: 'checkbox', checked: !!state.topics[topic.id],
+          onchange: function (e) { setFlag('topics', topic.id, e.target.checked); }
+        }),
+        'Mark topic as completed'
+      ),
+      h('div', { class: 'notes' },
+        h('div', { class: 'block-title' }, h('label', { htmlFor: noteId, text: 'My notes' })),
+        textarea,
+        h('p', { class: 'hint', text: 'Saved automatically in this browser.' })
+      )
+    );
+
+    head.addEventListener('click', function () {
+      var open = head.getAttribute('aria-expanded') !== 'true';
+      head.setAttribute('aria-expanded', String(open));
+      body.hidden = !open;
+      if (open) openTopics[topic.id] = true; else delete openTopics[topic.id];
+    });
+
+    var card = h('article', { class: 'topic' }, h('h3', null, head), body);
+    ui.topicCards[topic.id] = card;
+    return card;
+  }
+
+  function buildSection(sec, index) {
+    var progressChip = h('span', { class: 'chip' });
+    ui.sectionProgress[sec.id] = progressChip;
+
+    var task = sec.task;
+    var status = h('span', { class: 'task-status' });
+    var card = h('button', {
+      class: 'task-card', type: 'button',
+      onclick: function (e) { openTask(task, e.currentTarget); }
+    },
+      h('span', null, h('span', { class: 'task-title', text: task.title }), status),
+      h('span', { class: 'task-cta', text: 'View Practical Task' })
+    );
+    ui.taskCards[task.id] = { card: card, status: status };
+
+    return h('section', { class: 'section', 'aria-labelledby': 'h-' + sec.id },
+      h('div', { class: 'section-head' },
+        h('span', { class: 'phase-no', 'aria-hidden': 'true', text: String(index + 1) }),
+        h('div', null,
+          h('h2', { id: 'h-' + sec.id, text: sec.title }),
+          h('div', { class: 'section-meta' },
+            h('span', { class: 'chip neutral', text: sec.timespan }),
+            progressChip
+          )
+        )
+      ),
+      sec.topics.map(buildTopic),
+      card
+    );
+  }
+
+  function renderAll() {
+    ui = { sectionProgress: {}, topicCards: {}, taskCards: {} };
+    var root = $('roadmap');
+    root.textContent = '';
+    CURRICULUM.forEach(function (sec, i) { root.appendChild(buildSection(sec, i)); });
+    updateProgress();
+  }
+
+  function showStorageWarning() {
+    var box = $('storage-warning');
+    if (!storageOk && !box.firstChild) {
+      box.appendChild(h('p', { class: 'warn', role: 'alert', text: 'Browser storage is unavailable, so progress and notes will be lost when you close this page.' }));
+    }
+  }
+
+  /* =====================================================================
+   * Task modal
+   * ===================================================================== */
+  var taskDialog = $('task-dialog');
+  var currentTask = null;
+  var lastTrigger = null;
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext !== false) {
+      return navigator.clipboard.writeText(text).catch(function () { return legacyCopy(text); });
+    }
+    return legacyCopy(text);
+  }
+
+  function legacyCopy(text) {
+    return new Promise(function (resolve, reject) {
+      var ta = h('textarea', { value: text, 'aria-hidden': 'true' });
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok) resolve(); else reject(new Error('copy failed'));
+    });
+  }
+
+  function buildSnippet(snippet) {
+    var btn = h('button', { class: 'copy', type: 'button', text: 'Copy Code' });
+    var timer = null;
+    btn.addEventListener('click', function () {
+      copyText(snippet.code).then(function () {
+        btn.textContent = 'Copied!';
+      }, function () {
+        btn.textContent = 'Press Ctrl/Cmd+C';
+        var range = document.createRange();
+        range.selectNodeContents(pre);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }).then(function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () { btn.textContent = 'Copy Code'; }, 1800);
+      });
+    });
+    var pre = h('pre', null, h('code', { text: snippet.code }));
+    pre.firstChild.style.cssText = 'background:none;border:0;padding:0;font-size:inherit;';
+    return h('div', { class: 'snippet' },
+      h('div', { class: 'snippet-bar' }, h('span', { text: snippet.label }), btn),
+      pre
+    );
+  }
+
+  function renderTask(task) {
+    var content = $('task-content');
+    content.textContent = '';
+
+    var acCounter = h('span');
+    function refreshAcCounter() {
+      var n = task.acs.filter(function (_, i) { return state.tasks[acKey(task, i)]; }).length;
+      acCounter.textContent = n + ' / ' + task.acs.length;
+    }
+
+    var acItems = task.acs.map(function (text, i) {
+      var key = acKey(task, i);
+      return h('li', null,
+        h('label', null,
+          h('input', {
+            type: 'checkbox', checked: !!state.tasks[key],
+            onchange: function (e) { setFlag('tasks', key, e.target.checked); refreshAcCounter(); }
+          }),
+          h('span', null,
+            h('span', { class: 'ac-tag', text: 'AC ' + (i + 1) }),
+            h('span', { class: 'ac-text' }, rich(text))
+          )
+        )
+      );
+    });
+    refreshAcCounter();
+
+    var noteId = 'note-' + task.id;
+
+    content.appendChild(h('div', { class: 'modal-top' },
+      h('h2', { id: 'task-modal-title', text: task.title }),
+      h('button', {
+        class: 'icon-btn', type: 'button', 'aria-label': 'Close task window',
+        onclick: function () { taskDialog.close(); }, text: '×'
+      })
+    ));
+
+    content.appendChild(h('h3', { text: 'Overview' }));
+    content.appendChild(h('p', null, rich(task.overview)));
+
+    content.appendChild(h('h3', null, h('span', { text: 'Acceptance Criteria' }), acCounter));
+    content.appendChild(h('ul', { class: 'ac-list' }, acItems));
+
+    content.appendChild(h('h3', { text: 'Tech Stack Requirements' }));
+    content.appendChild(h('div', { class: 'stack' }, task.stack.map(function (s) { return h('span', { class: 'chip', text: s }); })));
+
+    content.appendChild(h('h3', { text: 'Architecture Guidelines' }));
+    content.appendChild(h('ul', null, task.guidelines.map(function (g) { return h('li', null, rich(g)); })));
+
+    content.appendChild(h('h3', { text: 'Starter Code' }));
+    task.snippets.forEach(function (s) { content.appendChild(buildSnippet(s)); });
+
+    content.appendChild(h('label', { class: 'check' },
+      h('input', {
+        type: 'checkbox', checked: !!state.tasks[task.id],
+        onchange: function (e) { setFlag('tasks', task.id, e.target.checked); }
+      }),
+      'Mark this practical task as completed'
+    ));
+
+    content.appendChild(h('h3', null, h('label', { htmlFor: noteId, text: 'Task Notes' })));
+    content.appendChild(h('textarea', {
+      id: noteId, rows: 5, value: state.notes[task.id] || '',
+      placeholder: 'Design decisions, blockers, links to your repo…',
+      oninput: function (e) { setNote(task.id, e.target.value); }
+    }));
+    content.appendChild(h('p', { class: 'hint', text: 'Saved automatically in this browser.' }));
+  }
+
+  function openTask(task, trigger) {
+    currentTask = task;
+    lastTrigger = trigger || null;
+    renderTask(task);
+    document.body.classList.add('modal-open');
+    taskDialog.showModal();
+    taskDialog.scrollTop = 0;
+  }
+
+  taskDialog.addEventListener('close', function () {
+    flushNotes();
+    currentTask = null;
+    document.body.classList.remove('modal-open');
+    $('task-content').textContent = '';
+    if (lastTrigger && document.contains(lastTrigger)) lastTrigger.focus();
+    lastTrigger = null;
+  });
+
+  // Click on the backdrop (the <dialog> element itself, outside .modal) closes the window.
+  taskDialog.addEventListener('click', function (e) {
+    if (e.target === taskDialog) taskDialog.close();
+  });
+
+  /* =====================================================================
+   * Reset
+   * ===================================================================== */
+  var resetDialog = $('reset-dialog');
+
+  $('reset-btn').addEventListener('click', function () { resetDialog.showModal(); });
+  $('reset-cancel').addEventListener('click', function () { resetDialog.close(); });
+  resetDialog.addEventListener('click', function (e) { if (e.target === resetDialog) resetDialog.close(); });
+
+  $('reset-confirm').addEventListener('click', function () {
+    clearTimeout(notesTimer);
+    dirtyNotes = {};
+    try {
+      Object.keys(KEYS).forEach(function (name) { window.localStorage.removeItem(KEYS[name]); });
+    } catch (e) {
+      storageOk = false;
+      showStorageWarning();
+    }
+    state = { topics: {}, tasks: {}, notes: {} };
+    if (taskDialog.open) taskDialog.close();
+    resetDialog.close();
+    renderAll();
+  });
+
+  /* =====================================================================
+   * Cross-tab sync and shutdown
+   * ===================================================================== */
+  window.addEventListener('storage', function (e) {
+    if (e.key && e.key.indexOf(PREFIX) !== 0) return;
+    var pending = {};
+    Object.keys(dirtyNotes).forEach(function (id) { pending[id] = state.notes[id]; });
+    state = loadState();
+    Object.keys(pending).forEach(function (id) {
+      if (pending[id]) state.notes[id] = pending[id]; else delete state.notes[id];
+    });
+    renderAll();
+    if (currentTask && taskDialog.open) renderTask(currentTask);
+  });
+
+  window.addEventListener('pagehide', flushNotes);
+  window.addEventListener('beforeunload', flushNotes);
+
+  /* =====================================================================
+   * Init
+   * ===================================================================== */
+  renderAll();
+  showStorageWarning();
+})();
+</script>
+</body>
+</html>
