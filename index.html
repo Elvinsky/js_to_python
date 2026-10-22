@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161d27" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Python Kick-Start">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Python Kick-Start</title>
 <style>
   :root {
@@ -95,12 +101,12 @@
     border: 1px solid var(--border); background: var(--surface); border-radius: 8px;
     padding: 8px 14px; font-weight: 600; font-size: .875rem;
   }
-  .btn:hover { background: var(--surface-2); }
+  @media (hover: hover) { .btn:hover { background: var(--surface-2); } }
   .btn-danger { color: var(--danger); }
   .btn-danger-solid { background: var(--danger); border-color: var(--danger); color: #fff; }
-  .btn-danger-solid:hover { background: var(--danger); filter: brightness(1.1); }
+  @media (hover: hover) { .btn-danger-solid:hover { background: var(--danger); filter: brightness(1.1); } }
   .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  .btn-primary:hover { background: var(--accent); filter: brightness(1.08); }
+  @media (hover: hover) { .btn-primary:hover { background: var(--accent); filter: brightness(1.08); } }
 
   .warn {
     margin: 16px 0 0; padding: 10px 14px; border-radius: 8px;
@@ -135,7 +141,7 @@
     width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
     background: none; border: 0; padding: 14px 16px; font-weight: 600;
   }
-  .topic-head:hover { background: var(--surface-2); }
+  @media (hover: hover) { .topic-head:hover { background: var(--surface-2); } }
   .check-badge {
     flex: none; width: 22px; height: 22px; border-radius: 50%;
     border: 2px solid var(--border); display: grid; place-items: center; font-size: 13px; color: transparent;
@@ -180,6 +186,7 @@
   .check input { width: 18px; height: 18px; accent-color: var(--ok); flex: none; margin: 0; }
   .notes label { display: block; }
   textarea {
+    font-size: max(16px, 1em);
     width: 100%; min-height: 96px; resize: vertical; padding: 10px 12px;
     border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
   }
@@ -191,7 +198,7 @@
     text-align: left; padding: 16px; border-radius: var(--radius);
     background: var(--accent-soft); border: 1px dashed var(--accent);
   }
-  .task-card:hover { filter: brightness(.98); }
+  @media (hover: hover) { .task-card:hover { filter: brightness(.98); } }
   .task-card.done { border-style: solid; border-color: var(--ok); }
   .task-title { display: block; font-weight: 700; }
   .task-status { display: block; font-size: .82rem; color: var(--muted); margin-top: 2px; }
@@ -206,9 +213,10 @@
     border: 0; padding: 0; color: var(--text); background: var(--surface);
     border-radius: 14px; box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
     max-width: calc(100vw - 24px);
+    overscroll-behavior: contain;
   }
   dialog::backdrop { background: rgba(8, 12, 18, .6); }
-  #task-dialog { width: 760px; max-height: calc(100vh - 32px); }
+  #task-dialog { width: 760px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overscroll-behavior: contain; }
   .modal { padding: 0 24px 24px; }
   .modal-top {
     position: sticky; top: 0; z-index: 1; background: var(--surface);
@@ -220,7 +228,7 @@
     flex: none; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
     background: var(--surface); font-size: 20px; line-height: 1;
   }
-  .icon-btn:hover { background: var(--surface-2); }
+  @media (hover: hover) { .icon-btn:hover { background: var(--surface-2); } }
   .modal h3 { margin: 22px 0 8px; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: flex; justify-content: space-between; }
   .modal p { margin: 0; }
   .ac-list { list-style: none; padding: 0 !important; display: grid; gap: 8px; }
@@ -241,7 +249,7 @@
   .snippet-bar .copy {
     background: #21262d; color: #e6edf3; border: 1px solid #30363d; border-radius: 6px; padding: 3px 10px; font-size: .78rem; font-weight: 600;
   }
-  .snippet-bar .copy:hover { background: #30363d; }
+  @media (hover: hover) { .snippet-bar .copy:hover { background: #30363d; } }
   .snippet pre { margin: 0; padding: 14px; overflow-x: auto; color: var(--code-text); font-size: .83rem; line-height: 1.5; tab-size: 4; }
   .modal .check { margin-top: 22px; }
 
@@ -253,6 +261,73 @@
 
   footer { text-align: center; color: var(--muted); font-size: .8rem; padding-bottom: 32px; }
   noscript p { padding: 16px; text-align: center; }
+  /* ---------- Touch, tablet and phone ---------- */
+  html { -webkit-tap-highlight-color: transparent; }
+  button, label, a, summary { touch-action: manipulation; }
+  .wrap {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .app-header { padding-top: env(safe-area-inset-top); }
+  footer { padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 16px)); padding-left: 16px; padding-right: 16px; }
+  .topic-body li, .links li { overflow-wrap: anywhere; }
+  .snippet pre { -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+
+  /* iPad and other tablets, portrait and landscape */
+  @media (min-width: 768px) {
+    body { font-size: 17px; }
+    .wrap { max-width: 980px; }
+    #task-dialog { width: 860px; }
+    .topic-head { padding: 16px 20px; }
+    .topic-body { padding-right: 20px; }
+  }
+
+  /* Finger-sized targets (iPhone, iPad, Android) */
+  @media (pointer: coarse) {
+    .btn { min-height: 44px; padding: 10px 16px; }
+    .topic-head { min-height: 56px; }
+    .check { min-height: 48px; }
+    .check input, .ac-list input { width: 22px; height: 22px; }
+    .ac-list label { min-height: 48px; padding: 12px; }
+    .icon-btn { width: 44px; height: 44px; }
+    .snippet-bar .copy { min-height: 36px; padding: 6px 14px; }
+    .links a, .rm-tags a { display: inline-block; padding: 8px 0; }
+    .links li { margin: 0; }
+    .task-cta { padding: 12px 18px; }
+  }
+
+  /* Phones (portrait) and landscape phones: the task window becomes a full-screen sheet */
+  @media (max-width: 640px), (max-height: 500px) {
+    #task-dialog {
+      width: 100%; max-width: 100%; border-radius: 0;
+      height: 100%; max-height: 100%;
+      height: 100dvh; max-height: 100dvh;
+    }
+    .modal {
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    .modal-top { padding-top: max(16px, env(safe-area-inset-top)); }
+  }
+
+  @media (max-width: 520px) {
+    .task-cta { width: 100%; text-align: center; }
+  }
+  @media (max-width: 480px) {
+    #reset-dialog { width: calc(100vw - 32px); }
+    .confirm .actions { flex-direction: column-reverse; }
+    .confirm .actions .btn { width: 100%; }
+  }
+
+  /* Landscape phones are short: do not pin the header, it would eat the screen */
+  @media (max-height: 500px) {
+    .app-header { position: static; }
+    .topic-head { min-height: 48px; }
+    .modal-top { padding-top: max(6px, env(safe-area-inset-top)); padding-bottom: 6px; align-items: center; }
+    .modal-top h2 { font-size: 1.05rem; }
+    .modal h3 { margin-top: 16px; }
+  }
 </style>
 </head>
 <body>
