@@ -676,15 +676,21 @@
           'uv add --dev ruff mypy pytest',
           'uv run python --version',
           '',
-          '# then run every acceptance check (they fail until you finish the task)',
+          '# then lint, type-check and test your work',
           'make check'
         ].join('\n'),
-        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end. You work in a fork of the template repository: it ships the acceptance tests and a `Makefile`, and leaves the project configuration and the code for you to write. Set up the virtual environment first, before you edit anything.',
+        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end. You start from a nearly empty fork of the template repository (see below) and create the configuration, the packages and the code yourself. Set up the virtual environment first, before you edit anything.',
+        exists: [
+          '`.python-version`: pins Python 3.14 for uv',
+          '`pyproject.toml`: only the `[project]` table (name, version, `requires-python >= 3.12`, no dependencies)',
+          '`Makefile`: `make setup`, `make lint`, `make typecheck`, `make test`, `make check` and `make fmt`; they work once you have added the tools and your first tests',
+          '`.gitignore` for Python projects (`.venv`, caches, `.env`)'
+        ],
         acs: [
-          'Initialize an isolated Python 3.12+ environment using `uv`.',
-          'Configure `pyproject.toml` with `Ruff` linter rules and `Mypy` strict type checks.',
-          'Create directory structure separating `/config`, `/domain`, `/api`, and `/tests`.',
-          'Add one pure function in `/domain` with parametrized `pytest` tests; `ruff check`, `ruff format --check`, `mypy .` and `pytest` all pass from a clean clone.'
+          'Create the virtual environment with `uv` (Python 3.12+; 3.14 is pinned), add `ruff`, `mypy` and `pytest` as development dependencies, and commit the generated `uv.lock`.',
+          'Configure `pyproject.toml`: Ruff (line length, `target-version`, lint rules including at least `E`, `F` and `I`, and the formatter) and Mypy with `strict = true`; point pytest at the `tests` directory.',
+          'Create the directory structure separating `/config`, `/domain`, `/api` and `/tests`, each an importable package; `/domain` imports no web or database framework.',
+          'Add one pure function in `/domain` with parametrized `pytest` tests in `/tests`; `make check` (Ruff, Ruff format check, Mypy strict, pytest) passes from a clean clone.'
         ],
         stack: ['Python 3.12+', 'uv', 'Ruff', 'Mypy (strict)', 'pytest', 'pyproject.toml'],
         guidelines: [
@@ -859,15 +865,21 @@
           'uv sync',
           'uv run python --version',
           '',
-          '# then run every acceptance check (they fail until you finish the task)',
+          '# then lint, type-check and test your work',
           'make check'
         ].join('\n'),
-        overview: 'Build an unauthenticated REST API for a product inventory catalog on top of PostgreSQL. You will practice async FastAPI routing, Pydantic v2 validation, SQLAlchemy 2.0 async sessions, tuned connection pooling, Alembic migrations and async API tests, and end with a self-documenting API you can click through in Swagger UI. You work in a fork of the template repository: the project configuration, models, Alembic setup, test fixtures and acceptance tests are provided, and the endpoints, schemas, seed script, migration and your own tests are marked `TODO`. Set up the virtual environment first, before you edit anything.',
+        overview: 'Build an unauthenticated REST API for a product inventory catalog on top of PostgreSQL. You will practice async FastAPI routing, Pydantic v2 validation, SQLAlchemy 2.0 async sessions, tuned connection pooling, Alembic migrations and async API tests, and end with a self-documenting API you can click through in Swagger UI. You start from a fork of the template repository that contains only the tooling (see below): you create the FastAPI application, the database model, the seed data, the Alembic setup and the tests yourself, and you provide your own PostgreSQL (for example with Docker Compose). Set up the virtual environment first, before you edit anything.',
+        exists: [
+          '`.python-version`: pins Python 3.14 for uv',
+          '`pyproject.toml` and `uv.lock`: the dependencies (FastAPI, Uvicorn, SQLAlchemy 2.0 async, asyncpg, Alembic, pydantic-settings; dev: pytest, pytest-asyncio, httpx, Ruff, Mypy) and the Ruff, Mypy (strict) and pytest configuration you wrote in Task 1',
+          '`Makefile`: `make setup`, `make lint`, `make typecheck`, `make test`, `make check` and `make fmt`',
+          '`.gitignore` for Python projects (`.venv`, caches, `.env`)'
+        ],
         acs: [
-          'Seed mock JSON product data into PostgreSQL using an async seed script.',
-          'Implement REST endpoints: `GET /items`, `GET /items/{id}`, `POST /items`, `PATCH /items/{id}`, `DELETE /items/{id}`.',
+          'Run PostgreSQL locally (for example with Docker Compose), create an `Item` model (SQLAlchemy 2.0, async) with at least a unique `sku`, a `name`, a `price` and a `stock`, and load 10+ mock products from a JSON file you create with an async seed script that can run twice without duplicating rows.',
+          'Implement REST endpoints: `GET /items`, `GET /items/{id}`, `POST /items`, `PATCH /items/{id}`, `DELETE /items/{id}`, with Pydantic v2 schemas and sensible status codes (201, 204, 404, 409 for a duplicate `sku`, 422).',
           'Set up SQLAlchemy `create_async_engine` with `pool_size=10` and `max_overflow=20`.',
-          'Verify interactive Swagger docs at `/docs`.',
+          'Verify interactive Swagger docs at `/docs`: all five operations are listed with their status codes.',
           'Create the schema with an Alembic migration (`alembic upgrade head`), not `create_all`.',
           'Write `pytest` tests for all five endpoints using `httpx.AsyncClient`, including 404 and 422 cases.'
         ],
@@ -878,7 +890,7 @@
           'No blocking I/O inside `async def`: use async drivers, or declare the handler with plain `def` so FastAPI runs it in a threadpool.',
           'Return proper status codes: 201 on create, 204 on delete, 404 for unknown ids, 422 comes from Pydantic.',
           'Use `PATCH` with a schema of optional fields and `model_dump(exclude_unset=True)` for partial updates.',
-          'Seed script is idempotent and run via `python -m scripts.seed`, not at app start-up.',
+          'Make the seed script idempotent and run it explicitly (for example `python -m scripts.seed`), never at app start-up.',
           'Pass the connection string through `pydantic-settings`; add `pool_recycle` if your DB closes idle connections.'
         ],
         recommended: {
@@ -1054,22 +1066,28 @@
         setup: [
           '# install uv once: https://docs.astral.sh/uv/getting-started/installation/',
           'uv python install 3.14',
-          'make setup   # creates a virtual environment in the repo root, services/auth and services/core',
+          'make setup   # creates a virtual environment in services/auth and services/core',
           '',
-          '# then run every acceptance check (they fail until you finish the task)',
+          '# then lint, type-check and test your work',
           'make check'
         ].join('\n'),
-        overview: 'Split an e-commerce backend into two services: an Auth Microservice that owns identities, passwords and one-time codes, and a Core Service that owns products and orders. The Core Service never sees a password; it only trusts signed JWTs and enforces role-based access with reusable dependency guards. Guards and OTP flows are covered by tests, auth events are logged without leaking secrets, and the whole system runs first under Docker Compose and then on a local Kubernetes cluster behind a single Ingress. You work in a fork of the template repository: both services come with configuration, models, Alembic setup, test fixtures and acceptance tests, and the security code, endpoints and `ARCHITECTURE.md` are marked `TODO`. All infrastructure is yours to build from scratch: the Dockerfiles, the whole Docker Compose stack (both services, their databases and Redis) and every Kubernetes manifest. Each service has its own virtual environment, so set all of them up first (`make setup`).',
+        overview: 'Split an e-commerce backend into two services: an Auth Microservice that owns identities, passwords and one-time codes, and a Core Service that owns products and orders. The Core Service never sees a password; it only trusts signed JWTs and enforces role-based access with reusable dependency guards. Guards and OTP flows are covered by tests, auth events are logged without leaking secrets, and the whole system runs first under Docker Compose and then on a local Kubernetes cluster behind a single Ingress. You start from a fork of the template repository that contains only the tooling (see below). You create both services (application code, models, migrations and tests), their Dockerfiles, the whole Docker Compose stack (both services, their databases and Redis), `ARCHITECTURE.md` and every Kubernetes manifest yourself. Each service has its own virtual environment, so set both up first (`make setup`).',
+        exists: [
+          '`.python-version`: pins Python 3.14 for uv',
+          '`services/auth/` and `services/core/`: each contains only a `.python-version` (3.14), a `pyproject.toml` and a `uv.lock`, with the dependencies (FastAPI, Uvicorn, SQLAlchemy 2.0 async, asyncpg, Alembic, pydantic-settings, structlog; Auth also PyJWT, Argon2, Redis, python-multipart and email-validator; Core also PyJWT; dev: pytest, pytest-asyncio, httpx, Ruff, Mypy, plus fakeredis in Auth) and the Ruff, Mypy (strict) and pytest configuration',
+          '`Makefile`: `make setup`, `make lint`, `make typecheck`, `make test`, `make check` and `make fmt`, each running in both services',
+          '`.gitignore` for Python projects (`.venv`, caches, `.env`)'
+        ],
         acs: [
-          'Build Auth Microservice handling registration, password hashing, and Redis OTP verification.',
+          'Create the Auth microservice (`services/auth`): registration, Argon2 password hashing, and Redis OTP verification.',
           'Issue signed JWT bearer tokens upon authentication.',
-          'Implement custom security dependency guard in Core Service to decode and validate JWTs.',
+          'Create the Core service (`services/core`) with a custom security dependency guard that decodes and validates JWTs.',
           'Enforce RBAC: `user` (order placement), `moderator`/`admin` (price override & stock edits).',
           'Cover the guard matrix with `pytest` (401 missing/invalid/expired token, 403 wrong role, 200 allowed role) and OTP flows with `fakeredis` (success, wrong code, expiry, single use).',
           'Emit structured logs for register, login success/failure and OTP issue/verify, with no passwords, tokens or codes in the output.',
-          'Containerize Auth and Core with multi-stage, non-root Dockerfiles; `docker compose up --build` starts both services, their PostgreSQL databases and Redis locally.',
+          'Containerize Auth and Core with multi-stage, non-root Dockerfiles and write a `compose.yaml` so that `docker compose up --build` starts both services, one PostgreSQL database per service and Redis locally.',
           'Core validates JWTs locally and never calls Auth per request; document service boundaries (owned tables, JWT claims, error format) in `ARCHITECTURE.md`.',
-          'Deploy to a local Kubernetes cluster (`k3d`): one Deployment (2 replicas) and ClusterIP Service per service, ConfigMap + Secret for configuration, readiness (`/ready`) and liveness (`/health`) probes, and a single Ingress routing `/auth` to Auth and `/api` to Core.',
+          'Write the Kubernetes manifests (`deploy/k8s`) and deploy to a local cluster (`k3d`): one Deployment (2 replicas) and ClusterIP Service per service, ConfigMap + Secret for configuration, readiness (`/ready`) and liveness (`/health`) probes, and a single Ingress routing `/auth` to Auth and `/api` to Core.',
           'Run schema migrations as a Kubernetes Job, then demonstrate resilience: delete a Core pod and show traffic keeps flowing, and scale Core to 3 replicas.'
         ],
         stack: ['FastAPI', 'PyJWT', 'Argon2 / bcrypt', 'Redis (redis-py asyncio)', 'PostgreSQL', 'SQLAlchemy 2.0', 'pytest + fakeredis', 'Docker Compose', 'Kubernetes (k3d)', 'kubectl + Kustomize'],
@@ -1117,14 +1135,14 @@
           ]
         },
         steps: [
-          'Fork the template and set up every virtual environment with `make setup`. The monorepo layout is ready: `services/auth`, `services/core`, `deploy/k8s/base`, `deploy/k8s/overlays/local`.',
+          'Fork the template and set up both virtual environments with `make setup`. The repository only contains the tooling: you create `services/auth/app`, `services/core/app`, `compose.yaml`, `ARCHITECTURE.md` and `deploy/k8s/`.',
           'Write the contracts first in `ARCHITECTURE.md`: JWT claims (`sub`, `role`, `exp`, `iss`, `aud`), the error response shape, which service owns which tables, and the public URL prefixes (`/auth`, `/api`).',
           'Build and test Auth in isolation: register (Argon2 hash), login and OTP via Redis, JWT issue, `/health` and `/ready`.',
           'Build and test Core in isolation: items and orders, the `require_roles` guard, and the guard-matrix tests. Core only needs the JWT verification key.',
           'Write a multi-stage, non-root Dockerfile for each service and a `compose.yaml` with `auth`, `core`, two databases and Redis. Run `docker compose up --build` and click through both Swagger UIs.',
           'Create the cluster: `k3d cluster create kickstart -p "8080:80@loadbalancer"`. Build versioned images and import them: `k3d image import kickstart/auth:0.1.0 kickstart/core:0.1.0 -c kickstart`.',
           'Write manifests: Namespace, ConfigMap (plain settings), Secret (JWT key, DB URLs; generate them locally, do not commit them), Deployment with probes and resources, Service, and one Ingress.',
-          'Run migrations as a `Job` (`alembic upgrade head`) before the Deployments roll out. Apply everything with `kubectl apply -k deploy/k8s/overlays/local`.',
+          'Run migrations as a `Job` (`alembic upgrade head`) before the Deployments roll out. Apply everything (for example with Kustomize: `kubectl apply -k deploy/k8s/overlays/local`).',
           'Verify: `kubectl get pods -n kickstart`, `kubectl rollout status`, then call `http://localhost:8080/auth/...` and `http://localhost:8080/api/...`. Delete a Core pod, scale Core to 3, and watch traffic keep working.',
           'Run the guard-matrix tests (or a smoke script) against the cluster URL to prove 401, 403 and 200 behave identically to local tests.'
         ]
@@ -1460,7 +1478,7 @@
       h('h3', { id: 'start-title', text: 'Start here: fork the template' }),
       h('p', { class: 'start-lead' },
         h('strong', { text: 'Set up the virtual environment first. ' }),
-        rich('Do not edit any code until `uv run python --version` reports Python 3.14 (3.12 is the minimum) and the acceptance checks run.')
+        rich('Do not edit any code until `uv run python --version` reports Python 3.14 (3.12 is the minimum).')
       ),
       h('ol', { class: 'steps' },
         h('li', null, 'Fork the template repository on GitHub: ',
@@ -1529,6 +1547,11 @@
     ));
 
     if (task.repo) content.appendChild(buildStart(task));
+    if (task.exists && task.exists.length) {
+      content.appendChild(h('h3', { text: 'What is already in the repository' }));
+      content.appendChild(h('ul', null, task.exists.map(function (e) { return h('li', null, rich(e)); })));
+      content.appendChild(h('p', { class: 'hint', text: 'Everything else is yours to create.' }));
+    }
 
     content.appendChild(h('h3', { text: 'Overview' }));
     content.appendChild(h('p', null, rich(task.overview)));

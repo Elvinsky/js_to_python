@@ -69,6 +69,7 @@ CURRICULUM.forEach((section, index) => {
     REPO_NAME: repoName,
     SETUP_COMMANDS: task.setup,
     OVERVIEW: task.overview,
+    EXISTS: bullets(task.exists || []),
     ACCEPTANCE_CRITERIA: task.acs.map((a, i) => `- [ ] **AC ${i + 1}**: ${a}`).join('\n'),
     TECH_STACK: bullets(task.stack),
     RECOMMENDED_STACK: task.recommended ? recommended(task.recommended) : '',

@@ -9,7 +9,4 @@
    ```
 
 3. Set up the virtual environment (section 1), then create a branch: `git switch -c solution`.
-4. Search for `TODO` to find everything you have to implement: `grep -rn "TODO" . --exclude-dir=.venv --exclude-dir=.git --exclude=README.md`.
-5. Commit small steps and run `make check` before every push, so you always know which criteria are done.
-6. Keep the acceptance tests in `tests/acceptance/` unchanged: they are the definition of "done" for each
-   acceptance criterion. Write your own tests next to them.
+4. Build the task step by step and commit small steps. Run `make check` before every push so you always know where you stand.

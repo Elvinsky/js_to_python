@@ -7,9 +7,11 @@ progress saved in `localStorage`, and a layout that works on phones and tablets.
 
 ## Practical task repositories
 
-Each practical task has its own **forkable template repository** with starter code, configuration and
-acceptance tests. Learners fork it, clone their fork, set up the virtual environment first (`uv`), and then build the task
-themselves: the template gives minimal starter code with short hints, and `make check` runs the acceptance tests.
+Each practical task has its own **forkable template repository**. A template is deliberately thin: the pinned
+Python version, the dependencies and the lint/type/test configuration, a `Makefile` and a README. It contains no
+application code, no tests and no infrastructure. Learners fork it, clone their fork, set up the virtual environment
+first (`uv`), and build everything else themselves. The README of each repository states exactly what exists and
+what has to be built.
 
 | Task | Repository |
 |---|---|
@@ -45,8 +47,8 @@ Conventions shared by the task repositories:
 - Python 3.14 pinned in `.python-version` (`requires-python >= 3.12`), dependencies managed with `uv`; `uv.lock` is
   committed in Tasks 2 and 3 (in Task 1, creating it is part of the task).
 - `make check` runs Ruff, the Ruff format check, Mypy strict and pytest.
-- `tests/acceptance/` has one test file per acceptance criterion. They fail on the untouched template and pass
-  once the task is done; learners write their own tests beside them.
+- Task 1 ships only `pyproject.toml` with the project table; Tasks 2 and 3 ship the dependencies and the tool
+  configuration from Task 1. Task 3 has two independent uv projects (`services/auth`, `services/core`).
 
 ## Other files
 
