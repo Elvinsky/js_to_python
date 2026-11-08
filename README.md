@@ -8,8 +8,8 @@ progress saved in `localStorage`, and a layout that works on phones and tablets.
 ## Practical task repositories
 
 Each practical task has its own **forkable template repository** with starter code, configuration and
-acceptance tests. Learners fork it, clone their fork, set up the virtual environment first (`uv`), and implement
-the `TODO`s until `make check` is green.
+acceptance tests. Learners fork it, clone their fork, set up the virtual environment first (`uv`), and then build the task
+themselves: the template gives minimal starter code with short hints, and `make check` runs the acceptance tests.
 
 | Task | Repository |
 |---|---|
