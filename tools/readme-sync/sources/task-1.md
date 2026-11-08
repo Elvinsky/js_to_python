@@ -22,7 +22,6 @@
 | `.python-version` | provided | pins the Python version for uv (3.14) |
 | `pyproject.toml` | **TODO (AC 1, AC 2)** | only the `[project]` table exists: add dev tools and configure Ruff, Mypy and pytest |
 | `Makefile` | provided | `make setup`, `make lint`, `make typecheck`, `make test`, `make check` |
-| `.github/workflows/ci.yml` | provided | runs the same checks on every push to your fork |
 | `config/`, `domain/`, `api/` | **TODO (AC 3)** | create these packages (each with `__init__.py`); `domain/` must not import any framework |
 | `domain/pricing.py` | **TODO (AC 4)** | implement `apply_discount(price: Decimal, percent: int) -> Decimal` |
 | `tests/test_pricing.py` | provided | the tests your function has to satisfy; add your own parametrized tests beside it |
@@ -66,6 +65,6 @@ Topics from the Python Kick-Start roadmap for this section:
 
 ## Definition of done
 
-- [ ] `make check` is green locally and in the CI of your fork
+- [ ] `make check` is green
 - [ ] `uv.lock` and your `pyproject.toml` configuration are committed, `.venv` is not
 - [ ] Stretch: add a second pure function to `/domain` with its own parametrized tests

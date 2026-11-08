@@ -7,7 +7,7 @@ progress saved in `localStorage`, and a layout that works on phones and tablets.
 
 ## Practical task repositories
 
-Each practical task has its own **forkable template repository** with starter code, configuration, CI and
+Each practical task has its own **forkable template repository** with starter code, configuration and
 acceptance tests. Learners fork it, clone their fork, set up the virtual environment first (`uv`), and implement
 the `TODO`s until `make check` is green.
 
@@ -44,7 +44,7 @@ Conventions shared by the task repositories:
 
 - Python 3.14 pinned in `.python-version` (`requires-python >= 3.12`), dependencies managed with `uv`; `uv.lock` is
   committed in Tasks 2 and 3 (in Task 1, creating it is part of the task).
-- `make check` runs Ruff, the Ruff format check, Mypy strict and pytest; the same commands run in GitHub Actions.
+- `make check` runs Ruff, the Ruff format check, Mypy strict and pytest.
 - `tests/acceptance/` has one test file per acceptance criterion. They fail on the untouched template and pass
   once the task is done; learners write their own tests beside them.
 

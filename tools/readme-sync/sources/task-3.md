@@ -24,7 +24,7 @@ the `make` targets from the root.
 
 | Path | State | Purpose |
 |---|---|---|
-| `Makefile`, `.python-version`, `.github/workflows/ci.yml`, `pyproject.toml` | provided | tooling for the three projects and CI |
+| `Makefile`, `.python-version`, `pyproject.toml` | provided | tooling for the three projects |
 | `services/auth/app/{config,models,schemas,deps,database,logging_config,health,main}.py` | provided | settings, `users` table, schemas, dependencies, structlog setup, `/health` and `/ready` |
 | `services/auth/app/security.py` | **TODO (AC 1, AC 2)** | `hash_password`, `verify_password` (Argon2id), `create_access_token` (JWT) |
 | `services/auth/app/otp.py` | **TODO (AC 1)** | `issue_otp`, `verify_otp` on Redis |
@@ -151,7 +151,7 @@ Topics from the Python Kick-Start roadmap for this section:
 
 ## Definition of done
 
-- [ ] `make check` is green locally and in the CI of your fork
+- [ ] `make check` is green
 - [ ] `docker compose up --build` starts both services, their databases and Redis
 - [ ] The cluster runs two replicas of each service behind one Ingress, and you demonstrated the resilience steps
 - [ ] Each service has its committed Alembic migration and `uv.lock`; no secrets, `.env` files or `.venv` are committed

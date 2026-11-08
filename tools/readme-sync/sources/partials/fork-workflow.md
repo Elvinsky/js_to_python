@@ -10,7 +10,6 @@
 
 3. Set up the virtual environment (section 1), then create a branch: `git switch -c solution`.
 4. Search for `TODO` to find everything you have to implement: `grep -rn "TODO" . --exclude-dir=.venv --exclude-dir=.git --exclude=README.md`.
-5. Commit small steps. The GitHub Actions workflow in `.github/workflows/ci.yml` runs the same checks as `make check`
-   on every push to your fork, so you can see your progress there too.
+5. Commit small steps and run `make check` before every push, so you always know which criteria are done.
 6. Keep the acceptance tests in `tests/acceptance/` unchanged: they are the definition of "done" for each
    acceptance criterion. Write your own tests next to them.

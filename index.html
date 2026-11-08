@@ -679,7 +679,7 @@
           '# then run every acceptance check (they fail until you finish the task)',
           'make check'
         ].join('\n'),
-        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end. You work in a fork of the template repository: it ships the acceptance tests, a `Makefile` and CI, and leaves the project configuration and the code for you to write. Set up the virtual environment first, before you edit anything.',
+        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end. You work in a fork of the template repository: it ships the acceptance tests and a `Makefile`, and leaves the project configuration and the code for you to write. Set up the virtual environment first, before you edit anything.',
         acs: [
           'Initialize an isolated Python 3.12+ environment using `uv`.',
           'Configure `pyproject.toml` with `Ruff` linter rules and `Mypy` strict type checks.',
@@ -703,7 +703,7 @@
             ] },
             { title: 'Quality tooling', items: [
               { name: 'Ruff', why: 'linter, import sorter and formatter in one fast tool' },
-              { name: 'Mypy (strict) or Pyright', why: 'pick one as the CI gate; Pylance/Pyright gives faster editor feedback' },
+              { name: 'Mypy (strict) or Pyright', why: 'pick one as the type-check gate in `make check`; Pylance/Pyright gives faster editor feedback' },
               { name: 'pytest + pytest-cov', why: 'tests and coverage; see the testing topic' },
               { name: 'pre-commit (optional)', why: 'runs Ruff and Mypy before each commit' }
             ] },
