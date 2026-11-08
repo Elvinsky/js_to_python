@@ -71,7 +71,7 @@
     border-bottom: 1px solid var(--border);
     box-shadow: var(--shadow);
   }
-  .app-header .wrap { padding-top: 14px; padding-bottom: 14px; }
+  .app-header .wrap { padding-top: 20px; padding-bottom: 18px; }
   .title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   h1 { margin: 0; font-size: 1.5rem; line-height: 1.2; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; }
   h1 .logo {
@@ -88,7 +88,7 @@
   @media (prefers-reduced-motion: reduce) { .bar > div { transition: none; } }
 
   @media (max-width: 520px) {
-    .app-header .wrap { padding-top: 10px; padding-bottom: 10px; }
+    .app-header .wrap { padding-top: 14px; padding-bottom: 12px; }
     .title-row { flex-wrap: nowrap; }
     h1 { font-size: 1.2rem; }
     .subtitle { display: none; }
@@ -114,7 +114,8 @@
   }
 
   /* ---------- Sections ---------- */
-  main { padding-top: 24px; padding-bottom: 56px; }
+  html { scroll-padding-top: 140px; } /* keep scrolled-to content clear of the sticky header */
+  main.wrap { padding-top: 32px; padding-bottom: 56px; } /* main.wrap: must outrank the generic .wrap padding */
   .section { margin-bottom: 36px; }
   .section-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
   .phase-no {
@@ -261,6 +262,48 @@
 
   footer { text-align: center; color: var(--muted); font-size: .8rem; padding-bottom: 32px; }
   noscript p { padding: 16px; text-align: center; }
+  /* ---------- NotebookLM widget ---------- */
+  .nlm-row { margin-bottom: 24px; }
+  .nlm { position: relative; display: inline-flex; align-items: center; gap: 4px; max-width: 100%;
+    background: var(--accent-soft); border: 1px solid var(--border); border-radius: 999px; padding: 4px 4px 4px 14px; }
+  .nlm-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .92rem;
+    text-decoration: none; color: var(--accent); padding: 6px 0; }
+  .nlm-link:hover { text-decoration: underline; }
+  .nlm-link svg { flex: none; }
+  .nlm-info { flex: none; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); color: var(--muted); font-weight: 700; font-size: .8rem; line-height: 1; }
+  .nlm-tip { display: none; position: absolute; z-index: 5; top: calc(100% + 8px); left: 0;
+    width: max-content; max-width: min(320px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 8px;
+    background: var(--text); color: var(--bg); font-size: .85rem; line-height: 1.4; box-shadow: var(--shadow); }
+  .nlm-tip::before { content: ""; position: absolute; top: -5px; left: 24px; width: 10px; height: 10px;
+    background: inherit; transform: rotate(45deg); }
+  .nlm:has(:focus-visible) .nlm-tip, .nlm.open .nlm-tip { display: block; }
+  @media (hover: hover) { .nlm:hover .nlm-tip { display: block; } }
+  .nlm.dismissed .nlm-tip { display: none !important; } /* Esc pressed */
+  @media (min-width: 361px) { .nlm-link span { white-space: nowrap; } }
+
+  /* ---------- "Start here" block (task window) ---------- */
+  .start { margin-top: 18px; padding: 2px 16px 14px; border: 1px solid var(--accent); border-left-width: 4px; border-radius: 10px; background: var(--accent-soft); }
+  .start h3 { color: var(--accent); }
+  .start-lead { margin: 0 0 8px !important; }
+  .start .steps { margin-bottom: 4px; }
+  .modal li code, .modal p code, .modal dt code, .modal dd code { overflow-wrap: anywhere; } /* inline code only, <pre> keeps scrolling */
+
+  /* ---------- Recommended stack and setup steps (task window) ---------- */
+  .modal ol { margin: 0; padding-left: 22px; }
+  .modal ol li { margin: 8px 0; }
+  .rec h4, .rec-avoid h4 { margin: 16px 0 6px; font-size: .85rem; }
+  .rec-python { margin: 0 !important; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); }
+  .rec dl { margin: 0; display: grid; grid-template-columns: minmax(0, 16rem) 1fr; gap: 8px 16px; }
+  .rec dt { font-weight: 600; overflow-wrap: anywhere; }
+  .rec dd { margin: 0; color: var(--muted); overflow-wrap: anywhere; }
+  .rec-avoid { margin-top: 16px; padding: 2px 14px 10px; border-left: 4px solid var(--danger); border-radius: 8px; background: var(--surface-2); }
+  .rec-avoid h4 { color: var(--danger); }
+  @media (max-width: 640px) {
+    .rec dl { grid-template-columns: 1fr; gap: 0; }
+    .rec dd { margin-bottom: 10px; }
+  }
+
   /* ---------- Touch, tablet and phone ---------- */
   html { -webkit-tap-highlight-color: transparent; }
   button, label, a, summary { touch-action: manipulation; }
@@ -323,6 +366,8 @@
   /* Landscape phones are short: do not pin the header, it would eat the screen */
   @media (max-height: 500px) {
     .app-header { position: static; }
+    html { scroll-padding-top: 0; }
+    main.wrap { padding-top: 20px; }
     .topic-head { min-height: 48px; }
     .modal-top { padding-top: max(6px, env(safe-area-inset-top)); padding-bottom: 6px; align-items: center; }
     .modal-top h2 { font-size: 1.05rem; }
@@ -354,6 +399,16 @@
 </header>
 
 <main class="wrap">
+  <div class="nlm-row">
+    <div class="nlm" id="nlm">
+      <a class="nlm-link" id="nlm-link" href="https://notebook.google.com/notebook/45445987-5d63-49c1-a1a5-91873473495c" target="_blank" rel="noopener noreferrer" aria-describedby="nlm-tip">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 8h6M8 12h6"/></svg>
+        <span>Use NotebookLM for immersive learning!</span>
+      </a>
+      <button type="button" class="nlm-info" id="nlm-info" aria-label="Access information for the NotebookLM notebook" aria-expanded="false" aria-controls="nlm-tip">i</button>
+      <div class="nlm-tip" id="nlm-tip" role="tooltip">Ask for viewer permission first: the notebook is private, so request access before opening the link.</div>
+    </div>
+  </div>
   <div id="storage-warning"></div>
   <noscript><p>Python Kick-Start needs JavaScript to run.</p></noscript>
   <div id="roadmap"></div>
@@ -613,7 +668,18 @@
       task: {
         id: 'task_1',
         title: 'Practical Task 1: Environment & Project Boilerplate Setup',
-        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end.',
+        repo: 'https://github.com/Elvinsky/Python_Course_Task_1',
+        setup: [
+          '# install uv once: https://docs.astral.sh/uv/getting-started/installation/',
+          'uv python install 3.14',
+          'uv sync',
+          'uv add --dev ruff mypy pytest',
+          'uv run python --version',
+          '',
+          '# then run every acceptance check (they fail until you finish the task)',
+          'make check'
+        ].join('\n'),
+        overview: 'Bootstrap a reproducible, strictly-typed Python project skeleton. Every later task builds on this layout, so the goal is a clean machine-to-machine setup (one command to install, one command to lint, one command to test) and a folder structure that keeps business logic independent of any web framework. A small, tested domain function proves the whole toolchain works end to end. You work in a fork of the template repository: it ships the acceptance tests, a `Makefile` and CI, and leaves the project configuration and the code for you to write. Set up the virtual environment first, before you edit anything.',
         acs: [
           'Initialize an isolated Python 3.12+ environment using `uv`.',
           'Configure `pyproject.toml` with `Ruff` linter rules and `Mypy` strict type checks.',
@@ -628,6 +694,30 @@
           '`/tests` mirrors the package layout; commit `uv.lock` so installs are reproducible.',
           'Treat `ruff check`, `ruff format --check`, `mypy .` and `pytest` as the definition of "green" before every commit.'
         ],
+        recommended: {
+          python: 'Python 3.14 (current stable). Fall back to 3.13 if a tool lacks support; 3.12 is the minimum the ACs allow. Pin it with `requires-python` in `pyproject.toml` and a `.python-version` file, and let `uv python install` fetch it.',
+          groups: [
+            { title: 'Runtime & packaging', items: [
+              { name: 'uv', why: 'installs Python, creates the venv, resolves and locks dependencies (`uv.lock`) in one tool' },
+              { name: 'pyproject.toml (PEP 621) with dependency-groups', why: 'single source of truth for metadata, dev dependencies and tool config' }
+            ] },
+            { title: 'Quality tooling', items: [
+              { name: 'Ruff', why: 'linter, import sorter and formatter in one fast tool' },
+              { name: 'Mypy (strict) or Pyright', why: 'pick one as the CI gate; Pylance/Pyright gives faster editor feedback' },
+              { name: 'pytest + pytest-cov', why: 'tests and coverage; see the testing topic' },
+              { name: 'pre-commit (optional)', why: 'runs Ruff and Mypy before each commit' }
+            ] },
+            { title: 'Editor', items: [
+              { name: 'VS Code (Python, Pylance, Ruff extensions) or PyCharm', why: 'select the `.venv` interpreter and enable format-on-save' }
+            ] }
+          ],
+          avoid: [
+            'Global `pip install` and a hand-maintained `requirements.txt` as the source of truth',
+            'The black + isort + flake8 combination (Ruff replaces all three)',
+            '`setup.py`, Pipenv and conda for this project',
+            'Importing FastAPI, SQLAlchemy or other frameworks inside `/domain`'
+          ]
+        },
         snippets: [
           {
             label: 'Shell: create the project',
@@ -848,7 +938,17 @@
       task: {
         id: 'task_2',
         title: 'Practical Task 2: Product Inventory Catalog API',
-        overview: 'Build an unauthenticated REST API for a product inventory catalog on top of PostgreSQL. You will practice async FastAPI routing, Pydantic v2 validation, SQLAlchemy 2.0 async sessions, tuned connection pooling, Alembic migrations and async API tests, and end with a self-documenting API you can click through in Swagger UI.',
+        repo: 'https://github.com/Elvinsky/Python_Course_Task_2',
+        setup: [
+          '# install uv once: https://docs.astral.sh/uv/getting-started/installation/',
+          'uv python install 3.14',
+          'uv sync',
+          'uv run python --version',
+          '',
+          '# then run every acceptance check (they fail until you finish the task)',
+          'make check'
+        ].join('\n'),
+        overview: 'Build an unauthenticated REST API for a product inventory catalog on top of PostgreSQL. You will practice async FastAPI routing, Pydantic v2 validation, SQLAlchemy 2.0 async sessions, tuned connection pooling, Alembic migrations and async API tests, and end with a self-documenting API you can click through in Swagger UI. You work in a fork of the template repository: the project configuration, models, Alembic setup, test fixtures and acceptance tests are provided, and the endpoints, schemas, seed script, migration and your own tests are marked `TODO`. Set up the virtual environment first, before you edit anything.',
         acs: [
           'Seed mock JSON product data into PostgreSQL using an async seed script.',
           'Implement REST endpoints: `GET /items`, `GET /items/{id}`, `POST /items`, `PATCH /items/{id}`, `DELETE /items/{id}`.',
@@ -867,6 +967,32 @@
           'Seed script is idempotent and run via `python -m scripts.seed`, not at app start-up.',
           'Pass the connection string through `pydantic-settings`; add `pool_recycle` if your DB closes idle connections.'
         ],
+        recommended: {
+          python: 'Python 3.14 (current stable). Fall back to 3.13 if asyncpg or another compiled dependency lacks wheels for 3.14; 3.12 is the minimum the ACs allow.',
+          groups: [
+            { title: 'API', items: [
+              { name: 'FastAPI + Uvicorn (`uvicorn[standard]`)', why: 'async framework and ASGI server; `--reload` for development' },
+              { name: 'Pydantic v2 + pydantic-settings', why: 'request/response schemas and typed configuration from environment variables' }
+            ] },
+            { title: 'Database', items: [
+              { name: 'PostgreSQL 16+', why: 'run it with Docker Compose; use the official image' },
+              { name: 'SQLAlchemy 2.0 (async) + asyncpg', why: 'ORM and the fastest async PostgreSQL driver; engine pooling as in the starter code' },
+              { name: 'Alembic (`alembic init -t async`)', why: 'versioned schema migrations' }
+            ] },
+            { title: 'Testing & tooling', items: [
+              { name: 'pytest + pytest-asyncio (`asyncio_mode = "auto"`) + httpx', why: 'async API tests with an in-process ASGI transport' },
+              { name: 'Ruff + Mypy (strict)', why: 'carry over the Task 1 setup unchanged' },
+              { name: 'Docker Compose', why: 'one command for PostgreSQL (and later Redis)' },
+              { name: 'A DB client (psql, DBeaver or TablePlus)', why: 'inspect the seeded data and the pool behaviour' }
+            ] }
+          ],
+          avoid: [
+            'psycopg2 or other sync drivers and `requests` inside `async def` handlers (they block the event loop)',
+            '`Base.metadata.create_all` as your schema strategy (use Alembic)',
+            'A module-level global session shared between requests',
+            'Returning ORM objects without a `response_model`'
+          ]
+        },
         snippets: [
           {
             label: 'database.py (engine, session, dependency)',
@@ -962,7 +1088,7 @@
     {
       id: 'sec_3',
       title: 'Section 3: “Get Yourself Familiar” — Auth, Guards & Caching',
-      timespan: '2 Weeks',
+      timespan: '3 Weeks',
       topics: [
         {
           id: 't_3_1',
@@ -1042,21 +1168,86 @@
             { label: 'FastAPI: testing dependencies with overrides', url: 'https://fastapi.tiangolo.com/advanced/testing-dependencies/' },
             { label: 'HTTPX documentation', url: 'https://www.python-httpx.org/' }
           ]
+        },
+        {
+          id: 't_3_5',
+          name: 'Microservices: What to Use & How to Set Them Up',
+          details: [
+            'When to split: independent deploy and scale, different security or data lifecycle, separate team ownership. Start from a modular monolith and split along bounded contexts. Auth vs Core is a classic first cut because identity has its own security boundary.',
+            'Rules of the road: each service owns its data (database per service, never shared tables) and exposes a contract. Synchronous calls use HTTP/JSON; asynchronous work uses a queue or events (Redis streams or a broker). Prefer fewer, coarser services over many tiny ones.',
+            'Recommended toolbox: FastAPI per service, one `pyproject.toml` + `uv.lock` per service, `httpx.AsyncClient` for service-to-service calls with explicit timeouts, `tenacity` for retries (idempotent calls only), JWTs verified locally by the receiving service, a gateway (Ingress) as the only public entry point, Docker Compose for local runs.',
+            'Cross-cutting concerns: timeouts on every network call, a correlation id header (`X-Request-ID`) logged by every service, health and readiness endpoints, idempotency keys for retried writes, and the fact that cross-service consistency is eventual, not transactional.',
+            'Setup order: write the contracts first (JWT claims, error body, data ownership), build each service in isolation with its own tests, then wire them with Compose, and only then move to Kubernetes.'
+          ],
+          js: [
+            'Several Express / Nest apps behind a gateway ≈ several FastAPI apps behind an Ingress',
+            '`axios` / `fetch` with `AbortController` ≈ `httpx.AsyncClient(timeout=...)`',
+            '`jose` / `jsonwebtoken` ≈ `PyJWT` (verify locally, do not call the issuer on every request)',
+            '`docker-compose.yml` is identical in both worlds'
+          ],
+          roadmap: [],
+          links: [
+            { label: 'Microservice architecture pattern (microservices.io)', url: 'https://microservices.io/patterns/microservices.html' },
+            { label: 'FastAPI in containers', url: 'https://fastapi.tiangolo.com/deployment/docker/' },
+            { label: 'HTTPX: timeouts', url: 'https://www.python-httpx.org/advanced/timeouts/' },
+            { label: 'Docker Compose documentation', url: 'https://docs.docker.com/compose/' }
+          ]
+        },
+        {
+          id: 't_3_6',
+          name: 'Containers & Kubernetes Essentials',
+          details: [
+            'One image per service: multi-stage build with `uv`, non-root user, pinned base image, `.dockerignore`, no secrets baked in. Docker Compose for local development.',
+            'Core Kubernetes objects: `Namespace`, `Deployment` (replicas, rolling update), `Service` (ClusterIP), `Ingress`, `ConfigMap`, `Secret`, probes (startup, readiness, liveness), resource requests and limits. Know that `HorizontalPodAutoscaler` exists.',
+            'Local cluster: `k3d` (K3s in Docker) bundles the Traefik ingress controller, so it works out of the box; `kind` and `minikube` are alternatives but need an ingress controller installed. Do not use Ingress NGINX: the Kubernetes project retired it in March 2026. Gateway API is the long-term successor.',
+            'Configuration flow: non-secret settings in a `ConfigMap`, keys and DB URLs in a `Secret` (never commit real values), both injected as environment variables. Database migrations run as a Kubernetes `Job`, not at pod start-up.',
+            'Package manifests with Kustomize (`base` + `overlays/local`); Helm is optional. Stateful services (PostgreSQL, Redis) come from a managed service or a maintained chart/operator, not hand-written manifests.',
+            'Daily commands: `kubectl get pods`, `describe`, `logs -f`, `rollout status`, `port-forward`, `scale`, `delete pod` (watch it self-heal).'
+          ],
+          js: [
+            'A Node container is no different to Kubernetes: Deployment, Service and probes are language-agnostic',
+            'PM2 cluster mode ≈ `replicas: N` in a Deployment',
+            'Nodemon + Docker ≈ Tilt / Skaffold for the local inner loop (optional)',
+            '`npm run build` in an image ≈ `uv sync --frozen --no-dev` in the builder stage'
+          ],
+          roadmap: [],
+          links: [
+            { label: 'Kubernetes basics tutorial', url: 'https://kubernetes.io/docs/tutorials/kubernetes-basics/' },
+            { label: 'Kubernetes: liveness, readiness and startup probes', url: 'https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/' },
+            { label: 'Kubernetes: Kustomize', url: 'https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/' },
+            { label: 'k3d (K3s in Docker)', url: 'https://k3d.io/' },
+            { label: 'Traefik Kubernetes Ingress provider', url: 'https://doc.traefik.io/traefik/providers/kubernetes-ingress/' },
+            { label: 'Ingress NGINX retirement statement', url: 'https://www.kubernetes.io/blog/2026/01/29/ingress-nginx-statement/' },
+            { label: 'Gateway API', url: 'https://gateway-api.sigs.k8s.io/' }
+          ]
         }
       ],
       task: {
         id: 'task_3',
-        title: 'Practical Task 3: Multi-Tenant E-Commerce Auth & Order System',
-        overview: 'Split an e-commerce backend into two services: an Auth Microservice that owns identities, passwords and one-time codes, and a Core Service that owns products and orders. The Core Service never sees a password; it only trusts signed JWTs and enforces role-based access with reusable dependency guards. Guards and OTP flows are covered by tests, and auth events are logged without leaking secrets.',
+        title: 'Practical Task 3: Multi-Tenant E-Commerce Auth & Order Microservices on Kubernetes',
+        repo: 'https://github.com/Elvinsky/Python_Course_Task_3',
+        setup: [
+          '# install uv once: https://docs.astral.sh/uv/getting-started/installation/',
+          'uv python install 3.14',
+          'make setup   # creates a virtual environment in the repo root, services/auth and services/core',
+          '',
+          '# then run every acceptance check (they fail until you finish the task)',
+          'make check'
+        ].join('\n'),
+        overview: 'Split an e-commerce backend into two services: an Auth Microservice that owns identities, passwords and one-time codes, and a Core Service that owns products and orders. The Core Service never sees a password; it only trusts signed JWTs and enforces role-based access with reusable dependency guards. Guards and OTP flows are covered by tests, auth events are logged without leaking secrets, and the whole system runs first under Docker Compose and then on a local Kubernetes cluster behind a single Ingress. You work in a fork of the template repository: both services come with configuration, models, Alembic setup, test fixtures and acceptance tests, and the security code, endpoints, Dockerfiles, Compose services, Kubernetes manifests and `ARCHITECTURE.md` are marked `TODO`. Each service has its own virtual environment, so set all of them up first (`make setup`).',
         acs: [
           'Build Auth Microservice handling registration, password hashing, and Redis OTP verification.',
           'Issue signed JWT bearer tokens upon authentication.',
           'Implement custom security dependency guard in Core Service to decode and validate JWTs.',
           'Enforce RBAC: `user` (order placement), `moderator`/`admin` (price override & stock edits).',
           'Cover the guard matrix with `pytest` (401 missing/invalid/expired token, 403 wrong role, 200 allowed role) and OTP flows with `fakeredis` (success, wrong code, expiry, single use).',
-          'Emit structured logs for register, login success/failure and OTP issue/verify, with no passwords, tokens or codes in the output.'
+          'Emit structured logs for register, login success/failure and OTP issue/verify, with no passwords, tokens or codes in the output.',
+          'Containerize Auth and Core with multi-stage, non-root Dockerfiles; `docker compose up --build` starts both services, their PostgreSQL databases and Redis locally.',
+          'Core validates JWTs locally and never calls Auth per request; document service boundaries (owned tables, JWT claims, error format) in `ARCHITECTURE.md`.',
+          'Deploy to a local Kubernetes cluster (`k3d`): one Deployment (2 replicas) and ClusterIP Service per service, ConfigMap + Secret for configuration, readiness (`/ready`) and liveness (`/health`) probes, and a single Ingress routing `/auth` to Auth and `/api` to Core.',
+          'Run schema migrations as a Kubernetes Job, then demonstrate resilience: delete a Core pod and show traffic keeps flowing, and scale Core to 3 replicas.'
         ],
-        stack: ['FastAPI', 'PyJWT', 'Argon2 / bcrypt', 'Redis (redis-py asyncio)', 'PostgreSQL', 'SQLAlchemy 2.0', 'pytest + fakeredis', 'Docker Compose'],
+        stack: ['FastAPI', 'PyJWT', 'Argon2 / bcrypt', 'Redis (redis-py asyncio)', 'PostgreSQL', 'SQLAlchemy 2.0', 'pytest + fakeredis', 'Docker Compose', 'Kubernetes (k3d)', 'kubectl + Kustomize'],
         guidelines: [
           'Two deployable services, each with its own database/schema; communicate only through JWTs (and HTTP if required).',
           'Hash passwords with Argon2id (or bcrypt); never log or return hashes.',
@@ -1064,7 +1255,53 @@
           'JWT claims: `sub` (user id), `role`, `exp`. Short-lived access tokens; keep the signing secret in an environment variable.',
           'Guards are FastAPI dependencies (`Depends`) returning the current user, so route handlers stay free of auth code.',
           'Return 401 for missing/invalid tokens and 403 for authenticated users without the required role.',
-          'Raise domain exceptions in services and translate them to HTTP in exception handlers, not inside business logic.'
+          'Raise domain exceptions in services and translate them to HTTP in exception handlers, not inside business logic.',
+          'Each service has its own database; if both share one PostgreSQL server in dev, use two databases with two users.',
+          'Every pod gets configuration from the environment; images are tagged with a version (never `latest`) and contain no secrets.'
+        ],
+        recommended: {
+          python: 'Python 3.14 (current stable). Fall back to 3.13 if a dependency lacks wheels; 3.12 is the minimum the ACs allow. Pin it per service with `requires-python` and `.python-version`.',
+          groups: [
+            { title: 'Services', items: [
+              { name: 'FastAPI + Pydantic v2 (one project per service)', why: 'same stack as Task 2; each service has its own `pyproject.toml` and `uv.lock`' },
+              { name: 'PyJWT', why: 'sign in Auth, verify in Core. Prefer asymmetric keys (RS256 or EdDSA) so Core only holds the public key; HS256 with a shared secret is acceptable for a first iteration' },
+              { name: 'argon2-cffi (or pwdlib with Argon2)', why: 'password hashing with Argon2id; bcrypt is the fallback' },
+              { name: 'redis-py (asyncio) 5+', why: 'OTP codes with TTL and rate limiting' },
+              { name: 'httpx + tenacity', why: 'only if services call each other: timeouts always, retries for idempotent requests only' },
+              { name: 'SQLAlchemy 2.0 async + asyncpg + Alembic', why: 'one database and one migration history per service' },
+              { name: 'structlog', why: 'JSON logs with a request/correlation id' }
+            ] },
+            { title: 'Testing', items: [
+              { name: 'pytest + pytest-asyncio + httpx', why: 'API and guard-matrix tests' },
+              { name: 'fakeredis, freezegun or time-machine', why: 'OTP expiry and token expiry without sleeping' }
+            ] },
+            { title: 'Containers & cluster', items: [
+              { name: 'Docker (BuildKit) + Compose v2', why: 'local multi-service environment' },
+              { name: 'k3d (K3s in Docker) + kubectl', why: 'fast local cluster with Traefik ingress included' },
+              { name: 'Kustomize (base + overlays/local)', why: 'built into kubectl, enough for this task; Helm optional' },
+              { name: 'PostgreSQL 16+ and Redis 7+', why: 'official images locally; use managed services in real environments' },
+              { name: 'k9s, Tilt or Skaffold (optional)', why: 'quality-of-life tools for inspecting the cluster and the inner dev loop' }
+            ] }
+          ],
+          avoid: [
+            'Ingress NGINX: retired by the Kubernetes project in March 2026 (use Traefik, or look at Gateway API)',
+            'One shared database or shared tables between Auth and Core',
+            'Calling Auth on every request to validate a token',
+            '`passlib` (unmaintained) and hand-rolled hashing or JWT code',
+            'The `latest` image tag, secrets in images or ConfigMaps, running containers as root'
+          ]
+        },
+        steps: [
+          'Fork the template and set up every virtual environment with `make setup`. The monorepo layout is ready: `services/auth`, `services/core`, `deploy/k8s/base`, `deploy/k8s/overlays/local`.',
+          'Write the contracts first in `ARCHITECTURE.md`: JWT claims (`sub`, `role`, `exp`, `iss`, `aud`), the error response shape, which service owns which tables, and the public URL prefixes (`/auth`, `/api`).',
+          'Build and test Auth in isolation: register (Argon2 hash), login and OTP via Redis, JWT issue, `/health` and `/ready`.',
+          'Build and test Core in isolation: items and orders, the `require_roles` guard, and the guard-matrix tests. Core only needs the JWT verification key.',
+          'Write a multi-stage, non-root Dockerfile for each service and a `compose.yaml` with `auth`, `core`, two databases and Redis. Run `docker compose up --build` and click through both Swagger UIs.',
+          'Create the cluster: `k3d cluster create kickstart -p "8080:80@loadbalancer"`. Build versioned images and import them: `k3d image import kickstart/auth:0.1.0 kickstart/core:0.1.0 -c kickstart`.',
+          'Write manifests: Namespace, ConfigMap (plain settings), Secret (JWT key, DB URLs; generate them locally, do not commit them), Deployment with probes and resources, Service, and one Ingress.',
+          'Run migrations as a `Job` (`alembic upgrade head`) before the Deployments roll out. Apply everything with `kubectl apply -k deploy/k8s/overlays/local`.',
+          'Verify: `kubectl get pods -n kickstart`, `kubectl rollout status`, then call `http://localhost:8080/auth/...` and `http://localhost:8080/api/...`. Delete a Core pod, scale Core to 3, and watch traffic keep working.',
+          'Run the guard-matrix tests (or a smoke script) against the cluster URL to prove 401, 403 and 200 behave identically to local tests.'
         ],
         snippets: [
           {
@@ -1169,244 +1406,157 @@
               '        response = await client.patch("/items/1/price", json={"price": 9.99}, headers=headers)',
               '    assert response.status_code == expected'
             ].join('\n')
-          }
-        ]
-      }
-    },
-
-    {
-      id: 'sec_4',
-      title: 'Section 4: Advanced Microservices & Production Infrastructure',
-      timespan: '3–4 Weeks',
-      topics: [
-        {
-          id: 't_4_3',
-          name: 'Django Essentials (for the Hybrid Pattern)',
-          details: [
-            'Project vs app, `settings.py`, `manage.py`, models → `makemigrations` / `migrate`, the admin site, lazy QuerySets.',
-            'Django creates and tracks its own tables (`django_migrations`, `django_content_type`, `auth_*`, ...). You need to recognize them because Alembic must leave them alone.',
-            'Django ORM is synchronous-first; that is why FastAPI serves the async, high-throughput endpoints while Django keeps the schema and the admin.',
-            'Django vs FastAPI vs Flask: batteries-included vs typed and async-first vs minimal. The admin panel is the main reason to keep Django here.'
-          ],
-          js: [
-            'Django ≈ a batteries-included framework (think Rails, or NestJS + an ORM + an admin UI)',
-            '`models.py` + `makemigrations` ≈ Prisma schema + `prisma migrate`',
-            'Django admin has no first-party Node equivalent (AdminJS is the closest)'
-          ],
-          roadmap: ['Frameworks', 'Django', 'Flask', 'Pyramid / Sanic / Tornado (awareness)'],
-          links: [
-            { label: 'Django tutorial', url: 'https://docs.djangoproject.com/en/stable/intro/tutorial01/' },
-            { label: 'Django migrations', url: 'https://docs.djangoproject.com/en/stable/topics/migrations/' },
-            { label: 'Django admin site', url: 'https://docs.djangoproject.com/en/stable/ref/contrib/admin/' }
-          ]
-        },
-        {
-          id: 't_4_1',
-          name: 'Polyglot Persistence & Shared Schemas',
-          details: [
-            'Relational (PostgreSQL) for ACID transactions vs. Document NoSQL (MongoDB) for event logs.',
-            'Enterprise Hybrid Pattern: Django owns migrations & the admin panel; FastAPI serves async high-throughput APIs.',
-            'Alembic `include_object` configuration excluding `django_migrations` to avoid schema lockouts.'
-          ],
-          js: [
-            'Prisma / Knex migrations ≈ Alembic (here only for tables FastAPI owns)',
-            'Mongoose ≈ Motor / Beanie for MongoDB from async Python'
-          ],
-          roadmap: ['Frameworks', 'Common Packages'],
-          links: [
-            { label: 'Django + FastAPI shared database migration strategy', url: 'https://damianhodgkiss.com/tutorials/django-fastapi-shared-database-migration-strategy' },
-            { label: 'Alembic documentation', url: 'https://alembic.sqlalchemy.org/' }
-          ]
-        },
-        {
-          id: 't_4_2',
-          name: 'Async Task Queues & Cloud Deployment',
-          details: [
-            'Background job processing using ARQ or Celery backed by Redis.',
-            'Docker multi-stage builds and ASGI deployment (Uvicorn / Granian).',
-            'Near-free cloud deployment on Render, Railway, or FastAPI Cloud.'
-          ],
-          js: [
-            'BullMQ / Bee-Queue ≈ ARQ (asyncio) or Celery (mature, heavier)',
-            '`node server.js` / PM2 ≈ Uvicorn / Granian (ASGI servers)',
-            'Multi-stage `node:alpine` Dockerfile ≈ multi-stage Python image with a copied `.venv`'
-          ],
-          roadmap: ['Concurrency', 'Asynchrony', 'Multiprocessing'],
-          links: [
-            { label: 'Python services deployment guide (runxbuild.com)', url: 'https://www.runxbuild.com/docs/services/python/' },
-            { label: 'ARQ documentation', url: 'https://arq-docs.helpmanual.io/' },
-            { label: 'Docker multi-stage builds', url: 'https://docs.docker.com/build/building/multi-stage/' }
-          ]
-        },
-        {
-          id: 't_4_4',
-          name: 'Observability, Health Checks & CI',
-          details: [
-            '`/health` (liveness) and `/ready` (checks DB and Redis); Docker `HEALTHCHECK`; graceful shutdown for workers.',
-            'CI with GitHub Actions: `uv sync --frozen`, Ruff, Mypy, pytest against Postgres and Redis service containers, with the uv cache enabled.',
-            'Awareness of metrics and tracing (`prometheus-client`, OpenTelemetry) and error reporting (Sentry).'
-          ],
-          js: [
-            'GitHub Actions workflows look the same; swap `npm ci` for `uv sync --frozen`',
-            '`prom-client` ≈ `prometheus-client`; `@sentry/node` ≈ `sentry-sdk`'
-          ],
-          roadmap: [],
-          links: [
-            { label: 'GitHub Actions documentation', url: 'https://docs.github.com/en/actions' },
-            { label: 'uv: GitHub Actions integration', url: 'https://docs.astral.sh/uv/guides/integration/github/' },
-            { label: 'OpenTelemetry for Python', url: 'https://opentelemetry.io/docs/languages/python/' },
-            { label: 'Sentry for Python', url: 'https://docs.sentry.io/platforms/python/' }
-          ]
-        }
-      ],
-      task: {
-        id: 'task_4',
-        title: 'Practical Task 4: Hybrid Django-FastAPI Polyglot Platform',
-        overview: 'Combine everything into a production-shaped platform: Django owns the PostgreSQL schema (migrations and admin panel), FastAPI serves the high-throughput async API against the same database, a Redis-backed worker handles background email jobs, and both services ship as small multi-stage Docker images with health checks and a CI pipeline, deployed to a free-tier cloud host.',
-        acs: [
-          'Configure shared PostgreSQL database where Django manages schema migrations and FastAPI executes read/write endpoints.',
-          'Exclude Django system tables from Alembic autogenerate using `include_object` filter in `env.py`.',
-          'Implement ARQ/Celery background queue for async email notifications.',
-          'Dockerize services with multi-stage Dockerfiles and deploy to Render/Railway.',
-          'Expose `/health` and `/ready` on the FastAPI service and add a GitHub Actions workflow that runs `ruff`, `mypy` and `pytest` against Postgres and Redis.',
-          'Stretch: append domain events (e.g. order placed, email sent) to a MongoDB collection and document why they are not stored in PostgreSQL.'
-        ],
-        stack: ['Django', 'FastAPI', 'SQLAlchemy 2.0', 'Alembic', 'PostgreSQL', 'Redis', 'ARQ or Celery', 'Docker', 'GitHub Actions', 'Render / Railway'],
-        guidelines: [
-          'Single source of truth for schema: Django migrations. Alembic is used only for tables FastAPI owns, if any, and must never propose drops for Django tables.',
-          'Mirror Django-owned tables in SQLAlchemy only as needed for queries; do not autogenerate DDL from those mirrors.',
-          'Keep MongoDB (if used) for append-only event logs; keep money and inventory in PostgreSQL for ACID guarantees.',
-          'Enqueue jobs from request handlers and return immediately; make jobs idempotent and retry-safe.',
-          'Multi-stage images: build dependencies in a builder stage, copy only the virtualenv into a slim runtime image, run as a non-root user.',
-          'All configuration through environment variables so the same image runs locally, in CI and in the cloud.',
-          'Readiness checks verify real dependencies (DB, Redis); liveness checks stay cheap.'
-        ],
-        snippets: [
-          {
-            label: 'alembic/env.py (exclude Django tables)',
-            code: [
-              '# Django owns these tables; Alembic must never create, alter or drop them.',
-              'DJANGO_PREFIXES = ("django_", "auth_")',
-              '',
-              'def include_object(obj, name, type_, reflected, compare_to):',
-              '    if type_ == "table":',
-              '        if name is not None and name.startswith(DJANGO_PREFIXES):',
-              '            return False',
-              '        # table exists in the DB but not in our metadata -> Django app table; do not propose a drop',
-              '        if reflected and compare_to is None:',
-              '            return False',
-              '    return True',
-              '',
-              '# in run_migrations_online() / run_migrations_offline():',
-              '# context.configure(',
-              '#     connection=connection,',
-              '#     target_metadata=target_metadata,',
-              '#     include_object=include_object,',
-              '# )'
-            ].join('\n')
           },
           {
-            label: 'worker.py (ARQ background email job)',
+            label: 'core/health.py (liveness and readiness endpoints)',
             code: [
-              'import os',
-              '',
-              'from arq import create_pool',
-              'from arq.connections import RedisSettings',
-              '',
-              'REDIS = RedisSettings.from_dsn(os.environ["REDIS_URL"])',
-              '',
-              'async def send_welcome_email(ctx: dict, user_id: int, email: str) -> None:',
-              '    # call your email provider here (SMTP, SES, Resend, ...)',
-              '    print(f"sending welcome email to {email} (user {user_id})")',
-              '',
-              'class WorkerSettings:',
-              '    functions = [send_welcome_email]',
-              '    redis_settings = REDIS',
-              '',
-              '# run the worker:  uv run arq worker.WorkerSettings',
-              '',
-              '# enqueue from a FastAPI route:',
-              '# pool = await create_pool(REDIS)',
-              '# await pool.enqueue_job("send_welcome_email", user.id, user.email)'
-            ].join('\n')
-          },
-          {
-            label: 'Dockerfile (multi-stage, uv)',
-            code: [
-              '# ---- build stage ----',
-              'FROM python:3.12-slim AS builder',
-              '# pin a uv version instead of :latest in real projects',
-              'COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv',
-              'WORKDIR /app',
-              'COPY pyproject.toml uv.lock ./',
-              'RUN uv sync --frozen --no-dev --no-install-project',
-              'COPY . .',
-              'RUN uv sync --frozen --no-dev',
-              '',
-              '# ---- runtime stage ----',
-              'FROM python:3.12-slim',
-              'WORKDIR /app',
-              'COPY --from=builder /app /app',
-              'ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1',
-              'RUN useradd --create-home appuser',
-              'USER appuser',
-              'EXPOSE 8000',
-              'CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]'
-            ].join('\n')
-          },
-          {
-            label: 'main.py (liveness and readiness endpoints)',
-            code: [
+              'from fastapi import APIRouter, Depends',
               'from sqlalchemy import text',
+              'from sqlalchemy.ext.asyncio import AsyncSession',
               '',
-              '# continues from the Task 2 snippets: app, Depends, AsyncSession, get_db',
+              'from core.database import get_db  # adjust to your layout',
               '',
-              '@app.get("/health")',
+              '# Mount WITHOUT the /api prefix: the kubelet probes /health and /ready directly.',
+              'router = APIRouter()',
+              '',
+              '@router.get("/health")',
               'async def health() -> dict[str, str]:',
-              '    return {"status": "ok"}  # liveness: the process is up',
+              '    return {"status": "ok"}  # liveness: the process is up; keep it cheap',
               '',
-              '@app.get("/ready")',
+              '@router.get("/ready")',
               'async def ready(db: AsyncSession = Depends(get_db)) -> dict[str, str]:',
               '    await db.execute(text("SELECT 1"))  # readiness: dependencies answer',
               '    return {"status": "ready"}'
             ].join('\n')
           },
           {
-            label: '.github/workflows/ci.yml',
+            label: 'compose.yaml (local multi-service stack)',
             code: [
-              'name: ci',
-              'on: [push, pull_request]',
+              'services:',
+              '  auth-db:',
+              '    image: postgres:16',
+              '    environment: { POSTGRES_USER: auth, POSTGRES_PASSWORD: auth, POSTGRES_DB: auth }',
+              '    healthcheck:',
+              '      test: ["CMD-SHELL", "pg_isready -U auth"]',
+              '      interval: 5s',
+              '      retries: 10',
+              '  core-db:',
+              '    image: postgres:16',
+              '    environment: { POSTGRES_USER: core, POSTGRES_PASSWORD: core, POSTGRES_DB: core }',
+              '    healthcheck:',
+              '      test: ["CMD-SHELL", "pg_isready -U core"]',
+              '      interval: 5s',
+              '      retries: 10',
+              '  redis:',
+              '    image: redis:7',
               '',
-              'jobs:',
-              '  test:',
-              '    runs-on: ubuntu-latest',
-              '    services:',
-              '      postgres:',
-              '        image: postgres:16',
-              '        env:',
-              '          POSTGRES_PASSWORD: postgres',
-              '          POSTGRES_DB: app',
-              '        ports: ["5432:5432"]',
-              '        options: >-',
-              '          --health-cmd "pg_isready -U postgres"',
-              '          --health-interval 5s',
-              '          --health-retries 10',
-              '      redis:',
-              '        image: redis:7',
-              '        ports: ["6379:6379"]',
-              '    env:',
-              '      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/app',
-              '      REDIS_URL: redis://localhost:6379/0',
-              '      JWT_SECRET: ci-only-secret',
-              '    steps:',
-              '      - uses: actions/checkout@v4',
-              '      - uses: astral-sh/setup-uv@v5',
-              '        with:',
-              '          enable-cache: true',
-              '      - run: uv sync --frozen',
-              '      - run: uv run ruff check . && uv run ruff format --check .',
-              '      - run: uv run mypy .',
-              '      - run: uv run pytest'
+              '  auth:',
+              '    build: ./services/auth',
+              '    environment:',
+              '      DATABASE_URL: postgresql+asyncpg://auth:auth@auth-db:5432/auth',
+              '      REDIS_URL: redis://redis:6379/0',
+              '      JWT_SECRET: dev-only-change-me   # use an asymmetric key pair beyond local dev',
+              '    depends_on:',
+              '      auth-db: { condition: service_healthy }',
+              '      redis: { condition: service_started }',
+              '    ports: ["8001:8000"]',
+              '',
+              '  core:',
+              '    build: ./services/core',
+              '    environment:',
+              '      DATABASE_URL: postgresql+asyncpg://core:core@core-db:5432/core',
+              '      JWT_SECRET: dev-only-change-me',
+              '    depends_on:',
+              '      core-db: { condition: service_healthy }',
+              '    ports: ["8002:8000"]'
+            ].join('\n')
+          },
+          {
+            label: 'Shell: local k3d cluster and image import',
+            code: [
+              '# k3d bundles the Traefik ingress controller; port 8080 on your machine -> cluster port 80',
+              'k3d cluster create kickstart -p "8080:80@loadbalancer"',
+              '',
+              'docker build -t kickstart/auth:0.1.0 services/auth',
+              'docker build -t kickstart/core:0.1.0 services/core',
+              'k3d image import kickstart/auth:0.1.0 kickstart/core:0.1.0 -c kickstart',
+              '',
+              '# the Namespace manifest lives in deploy/k8s/base, so kustomize creates it',
+              'kubectl apply -k deploy/k8s/overlays/local',
+              'kubectl get pods -n kickstart -w',
+              '',
+              '# resilience demo',
+              'kubectl delete pod -n kickstart -l app=core --wait=false',
+              'kubectl scale deployment/core -n kickstart --replicas=3',
+              '',
+              '# clean up',
+              'k3d cluster delete kickstart'
+            ].join('\n')
+          },
+          {
+            label: 'deploy/k8s/base/core.yaml (Deployment, Service, Ingress)',
+            code: [
+              'apiVersion: apps/v1',
+              'kind: Deployment',
+              'metadata:',
+              '  name: core',
+              '  namespace: kickstart',
+              'spec:',
+              '  replicas: 2',
+              '  selector:',
+              '    matchLabels: { app: core }',
+              '  template:',
+              '    metadata:',
+              '      labels: { app: core }',
+              '    spec:',
+              '      containers:',
+              '        - name: core',
+              '          image: kickstart/core:0.1.0',
+              '          ports:',
+              '            - containerPort: 8000',
+              '          envFrom:',
+              '            - configMapRef: { name: core-config }',
+              '            - secretRef: { name: core-secrets }',
+              '          readinessProbe:',
+              '            httpGet: { path: /ready, port: 8000 }',
+              '            periodSeconds: 5',
+              '          livenessProbe:',
+              '            httpGet: { path: /health, port: 8000 }',
+              '            initialDelaySeconds: 10',
+              '            periodSeconds: 10',
+              '          resources:',
+              '            requests: { cpu: 100m, memory: 128Mi }',
+              '            limits: { memory: 256Mi }',
+              '---',
+              'apiVersion: v1',
+              'kind: Service',
+              'metadata:',
+              '  name: core',
+              '  namespace: kickstart',
+              'spec:',
+              '  selector: { app: core }',
+              '  ports:',
+              '    - port: 80',
+              '      targetPort: 8000',
+              '---',
+              '# One Ingress for the whole system. Services must serve their routes under',
+              '# /auth and /api (mount the routers with those prefixes) because Traefik does not strip them here.',
+              'apiVersion: networking.k8s.io/v1',
+              'kind: Ingress',
+              'metadata:',
+              '  name: gateway',
+              '  namespace: kickstart',
+              'spec:',
+              '  ingressClassName: traefik',
+              '  rules:',
+              '    - http:',
+              '        paths:',
+              '          - path: /auth',
+              '            pathType: Prefix',
+              '            backend: { service: { name: auth, port: { number: 80 } } }',
+              '          - path: /api',
+              '            pathType: Prefix',
+              '            backend: { service: { name: core, port: { number: 80 } } }'
             ].join('\n')
           }
         ]
@@ -1734,6 +1884,46 @@
     );
   }
 
+  function repoName(url) { return url.replace(/\/+$/, '').split('/').pop(); }
+
+  function buildStart(task) {
+    var name = repoName(task.repo);
+    return h('section', { class: 'start', 'aria-labelledby': 'start-title' },
+      h('h3', { id: 'start-title', text: 'Start here: fork the template' }),
+      h('p', { class: 'start-lead' },
+        h('strong', { text: 'Set up the virtual environment first. ' }),
+        rich('Do not edit any code until `uv run python --version` reports Python 3.14 (3.12 is the minimum) and the acceptance checks run.')
+      ),
+      h('ol', { class: 'steps' },
+        h('li', null, 'Fork the template repository on GitHub: ',
+          h('a', { href: task.repo, target: '_blank', rel: 'noopener noreferrer', text: name })),
+        h('li', null, 'Clone your fork: ', h('code', { text: 'git clone https://github.com/<your-username>/' + name + '.git' })),
+        h('li', null, 'Create the virtual environment and run the checks (the commands are below). The README of the repository repeats the task description and acceptance criteria.'),
+        h('li', null, 'Implement every ', h('code', { text: 'TODO' }), ' until all acceptance tests are green.')
+      ),
+      buildSnippet({ label: 'Terminal: virtual environment setup', code: task.setup })
+    );
+  }
+
+  function buildRecommended(rec) {
+    return h('section', { class: 'rec', 'aria-labelledby': 'rec-title' },
+      h('h3', { id: 'rec-title', text: 'Recommended Stack' }),
+      h('p', { class: 'rec-python' }, h('strong', { text: 'Python version: ' }), rich(rec.python)),
+      rec.groups.map(function (g) {
+        return h('div', { class: 'rec-group' },
+          h('h4', { text: g.title }),
+          h('dl', null, g.items.map(function (it) {
+            return [h('dt', null, rich(it.name)), h('dd', null, rich(it.why))];
+          }))
+        );
+      }),
+      rec.avoid && rec.avoid.length ? h('div', { class: 'rec-avoid' },
+        h('h4', { text: 'Avoid' }),
+        h('ul', null, rec.avoid.map(function (a) { return h('li', null, rich(a)); }))
+      ) : null
+    );
+  }
+
   function renderTask(task) {
     var content = $('task-content');
     content.textContent = '';
@@ -1771,6 +1961,8 @@
       })
     ));
 
+    if (task.repo) content.appendChild(buildStart(task));
+
     content.appendChild(h('h3', { text: 'Overview' }));
     content.appendChild(h('p', null, rich(task.overview)));
 
@@ -1780,8 +1972,15 @@
     content.appendChild(h('h3', { text: 'Tech Stack Requirements' }));
     content.appendChild(h('div', { class: 'stack' }, task.stack.map(function (s) { return h('span', { class: 'chip', text: s }); })));
 
+    if (task.recommended) content.appendChild(buildRecommended(task.recommended));
+
     content.appendChild(h('h3', { text: 'Architecture Guidelines' }));
     content.appendChild(h('ul', null, task.guidelines.map(function (g) { return h('li', null, rich(g)); })));
+
+    if (task.steps && task.steps.length) {
+      content.appendChild(h('h3', { text: 'Step-by-step Setup' }));
+      content.appendChild(h('ol', { class: 'steps' }, task.steps.map(function (st) { return h('li', null, rich(st)); })));
+    }
 
     content.appendChild(h('h3', { text: 'Starter Code' }));
     task.snippets.forEach(function (s) { content.appendChild(buildSnippet(s)); });
@@ -1864,6 +2063,24 @@
     renderAll();
     if (currentTask && taskDialog.open) renderTask(currentTask);
   });
+
+  /* NotebookLM widget: the tooltip shows on hover/focus; the (i) button makes it work on touch screens too. */
+  (function () {
+    var box = $('nlm'), btn = $('nlm-info');
+    function setOpen(open) {
+      box.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    }
+    btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(!box.classList.contains('open')); });
+    document.addEventListener('click', function (e) { if (!box.contains(e.target)) setOpen(false); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      setOpen(false);
+      box.classList.add('dismissed'); // also hides a hover / keyboard-focus tooltip until the pointer or focus leaves
+    });
+    box.addEventListener('mouseleave', function () { box.classList.remove('dismissed'); });
+    box.addEventListener('focusout', function () { box.classList.remove('dismissed'); });
+  })();
 
   window.addEventListener('pagehide', flushNotes);
   window.addEventListener('beforeunload', flushNotes);

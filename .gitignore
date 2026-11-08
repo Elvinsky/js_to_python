@@ -1,0 +1,5 @@
+# The three task templates are separate git repositories (Elvinsky/Python_Course_Task_N).
+# They live next to the course app for maintenance but must never be committed here.
+/Python_Course_Task_*/
+
+.DS_Store
